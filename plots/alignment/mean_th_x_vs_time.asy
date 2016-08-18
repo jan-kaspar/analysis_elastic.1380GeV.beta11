@@ -38,7 +38,7 @@ for (int ai : arms.keys)
 		{
 			string f = topDir+datasets[dsi]+"/distributions_"+diagonals[dgi]+".root";
 			pen p = StdPen(dgi+1);
-			draw(swToHours*scale(1, 1e6), rGetObj(f, "time dependences/p_th_x"+arms[ai]+"_vs_time"), "eb,d0", p, dgn_labels[dgi]);
+			draw(swToHours*scale(1, 1e6), RootGetObject(f, "time dependences/p_th_x"+arms[ai]+"_vs_time"), "eb,d0", p, dgn_labels[dgi]);
 		}
 	}
 	

@@ -48,10 +48,10 @@ for (int dsi : datasets.keys)
 
 			string f = topDir+datasets[dsi]+"/distributions_"+diagonals[dgi]+".root";
 			
-			draw(scale(1e6, 1e6), rGetObj(f, "selected - angles/p_th_x"+arms[ai]+"_vs_th_y"+arms[ai]),
+			draw(scale(1e6, 1e6), RootGetObject(f, "selected - angles/p_th_x"+arms[ai]+"_vs_th_y"+arms[ai]),
 				"eb,d0", StdPen(dgi+1), dgn_labels[dgi]);
 			
-			rObject fit = rGetObj(f, "selected - angles/p_th_x"+arms[ai]+"_vs_th_y"+arms[ai]+"|pol1", error=false);
+			RootObject fit = RootGetObject(f, "selected - angles/p_th_x"+arms[ai]+"_vs_th_y"+arms[ai]+"|pol1", error=false);
 			if (!fit.valid)
 				continue;
 
@@ -66,11 +66,11 @@ for (int dsi : datasets.keys)
 
 		/*
 		string ff = topDir + "overall_alignment/fit_mean_th_x_vs_th_y.root";
-		//draw(scale(1e6, 1e6), rGetObj(ff, datasets[dsi] + "/" + arm_labels[ai] + "/g_mean_th_x_vs_th_y"), "p", mCi+3pt);		
+		//draw(scale(1e6, 1e6), RootGetObject(ff, datasets[dsi] + "/" + arm_labels[ai] + "/g_mean_th_x_vs_th_y"), "p", mCi+3pt);		
 		TF1_x_min = -90e-6;
 		TF1_x_max = +90e-6;
 
-		rObject fit = rGetObj(ff, datasets[dsi] + "/" + arm_labels[ai] + "/pol1");
+		RootObject fit = RootGetObject(ff, datasets[dsi] + "/" + arm_labels[ai] + "/pol1");
 		draw(scale(1e6, 1e6), fit, heavygreen+2pt, "double-RP fit");
 
 		real a = fit.rExec("GetParameter", 1);

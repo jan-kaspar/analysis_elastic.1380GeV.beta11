@@ -22,21 +22,6 @@ void Init_base()
 	bunchMap[9009].push_back(0);
 	bunchMap[9010].push_back(0);
 
-	// alignment settings
-	/*
-	AlignmentSource alSrc;
-	alSrc.SetAlignmentA(atNone);
-	alSrc.SetAlignmentB(atNone);
-	alSrc.SetAlignmentC(atNone);
-
-	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = 0E-3;
-	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = 0E-3;
-	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = 0E-3;
-	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = 0E-3;
-	
-	alignmentSources.push_back(alSrc);
-	*/
-
 	// environment settings
 	env.InitNominal();
 	env.UseMatchedOptics();
@@ -87,6 +72,7 @@ void Init_base()
 	
 	anal.t_min_fit = 0.027; // TODO
 
+	// TODO: check
 	anal.alignmentYRanges["L_F"] = Analysis::AlignmentYRange(-30., -3.0, 3.6, 30.);
 	anal.alignmentYRanges["L_N"] = Analysis::AlignmentYRange(-30., -3.0, 3.4, 30.);
 	anal.alignmentYRanges["R_N"] = Analysis::AlignmentYRange(-30., -3.2, 3.0, 30.);
@@ -111,16 +97,25 @@ void Init_45b_56t()
 	alSrc.SetAlignmentA(atConstant);
 	alSrc.SetAlignmentB(atConstant);
 	alSrc.SetAlignmentC(atConstant);
+
+	/*
 	// TODO: how determined
 	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = 260E-3;
 	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = 260E-3;
 	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = 0E-3;
 	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = 0E-3;
+	*/
+
+	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = -7.4E-3 + 137E-3;
+	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = +7.4E-3 + 137E-3;
+	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = -9.9E-3 + 137E-3;
+	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = +9.9E-3 + 137E-3;
+
 	alignmentSources.push_back(alSrc);
 
 	// analysis settings
 	anal.cut1_a = 1.; anal.cut1_c = 0E-6; anal.cut1_si = 26E-6;
-	anal.cut2_a = 1.; anal.cut2_c = +15E-6; anal.cut2_si = 30E-6;
+	anal.cut2_a = 1.; anal.cut2_c = +2E-6; anal.cut2_si = 30E-6;
 
 	anal.cut3_a = +451.; anal.cut3_b = 0.; anal.cut3_si = 0.09;
 	anal.cut4_a = -476.; anal.cut4_b = 0.; anal.cut4_si = 0.09;
@@ -152,16 +147,25 @@ void Init_45t_56b()
 	alSrc.SetAlignmentA(atConstant);
 	alSrc.SetAlignmentB(atConstant);
 	alSrc.SetAlignmentC(atConstant);
+
+	/*
 	// TODO: how determined
 	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = 200E-3;
 	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = 0E-3;
 	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = 0E-3;
 	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = 0E-3;
+	*/
+
+	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = +105E-3 + 59E-3;
+	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = -105E-3 + 59E-3;
+	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = +8.1E-3 + 59E-3;
+	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = -8.1E-3 + 59E-3;
+
 	alignmentSources.push_back(alSrc);
 
 	// analysis settings
 	anal.cut1_a = 1.; anal.cut1_c = 0E-6; anal.cut1_si = 26E-6;
-	anal.cut2_a = 1.; anal.cut2_c = +5E-6; anal.cut2_si = 30E-6;
+	anal.cut2_a = 1.; anal.cut2_c = -2E-6; anal.cut2_si = 30E-6;
 
 	anal.cut3_a = +426.; anal.cut3_b = 0.; anal.cut3_si = 0.09;
 	anal.cut4_a = -461.; anal.cut4_b = 0.; anal.cut4_si = 0.09;

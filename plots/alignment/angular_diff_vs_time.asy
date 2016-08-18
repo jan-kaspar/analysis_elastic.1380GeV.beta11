@@ -26,7 +26,7 @@ for (int dsi : datasets.keys)
 	for (int dgi : dgns.keys)
 	{
 		string f = topDir+datasets[dsi]+"/distributions_"+dgns[dgi]+".root";
-		draw(scale(1/3600, 1e6), rGetObj(f, "time dependences/p_diffNF_th_y_L_vs_time"), "eb,d0", StdPen(dgi+1), dgn_labs[dgi]);
+		draw(scale(1/3600, 1e6), RootGetObject(f, "time dependences/p_diffNF_th_y_L_vs_time"), "eb,d0", StdPen(dgi+1), dgn_labs[dgi]);
 	}
 }
 limits((time_min, -10), (time_max, +2), Crop);
@@ -45,7 +45,7 @@ for (int dsi : datasets.keys)
 	for (int dgi : dgns.keys)
 	{
 		string f = topDir+datasets[dsi]+"/distributions_"+dgns[dgi]+".root";
-		draw(scale(1/3600, 1e6), rGetObj(f, "time dependences/p_diffNF_th_y_R_vs_time"), "eb,d0", StdPen(dgi+1));
+		draw(scale(1/3600, 1e6), RootGetObject(f, "time dependences/p_diffNF_th_y_R_vs_time"), "eb,d0", StdPen(dgi+1));
 	}
 }
 
@@ -65,7 +65,7 @@ for (int dsi : datasets.keys)
 	for (int dgi : dgns.keys)
 	{
 		string f = topDir+datasets[dsi]+"/distributions_"+dgns[dgi]+".root";
-		draw(scale(1/3600, 1e6), rGetObj(f, "time dependences/g_ext_diffLR_th_y_vs_time"), "p", StdPen(dgi+1), mCi+2pt+StdPen(dgi+1));
+		draw(scale(1/3600, 1e6), RootGetObject(f, "time dependences/g_ext_diffLR_th_y_vs_time"), "p", StdPen(dgi+1), mCi+2pt+StdPen(dgi+1));
 	}
 }
 
@@ -86,7 +86,7 @@ for (int dsi : datasets.keys)
 	for (int dgi : dgns.keys)
 	{
 		string f = topDir+datasets[dsi]+"/distributions_"+dgns[dgi]+".root";
-		draw(scale(1/3600, 1e6), rGetObj(f, "time dependences/g_ext_diffLR_th_x_vs_time"), "p", StdPen(dgi+1), mCi+2pt+StdPen(dgi+1));
+		draw(scale(1/3600, 1e6), RootGetObject(f, "time dependences/g_ext_diffLR_th_x_vs_time"), "p", StdPen(dgi+1), mCi+2pt+StdPen(dgi+1));
 	}
 }
 

@@ -27,7 +27,7 @@ drawGridDef = true;
 
 TGraph_errorBar = None;
 
-real t_min = 0.5, t_max = 8.5;
+real t_min = 1.5, t_max = 4.0;
 
 
 NewPad(false);
@@ -40,18 +40,18 @@ for (int ui : units.keys)
 
 	/*
 	TGraph_reducePoints = 30;
-	draw(shift(-timestamp0, sh_x[ui]), rGetObj("bpm.root", "LHC.BOFSU:POSITIONS_H::"+bpms[ui]), black);
+	draw(shift(-timestamp0, sh_x[ui]), RootGetObject("bpm.root", "LHC.BOFSU:POSITIONS_H::"+bpms[ui]), black);
 	TGraph_reducePoints = 1; 
 	*/
 
 	for (int di : datasets.keys)
 	{
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b_p"), "p,l,eb", cyan, mCi+1pt+cyan);
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b_g"), "p,l,eb", green, mCi+1pt+green);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b_p"), "p,l,eb", cyan, mCi+1pt+cyan);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b_g"), "p,l,eb", green, mCi+1pt+green);
 
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b"), "p,l,eb", blue+1pt, mCi+1pt+blue);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/b"), "p,l,eb", blue+1pt, mCi+1pt+blue);
 
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/b_fit"), "l", red+1.5pt);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/b_fit"), "l", red+1.5pt);
 	}
 
 	limits((t_min, -100), (t_max, +100), Crop);
@@ -71,20 +71,20 @@ for (int ui : units.keys)
 	DrawRunBands(-200, +500);
 
 	//TGraph_reducePoints = 30;
-	//draw(shift(-timestamp0, sh_y[ui]), rGetObj("bpm.root", "LHC.BOFSU:POSITIONS_V::"+bpms[ui]), black);
+	//draw(shift(-timestamp0, sh_y[ui]), RootGetObject("bpm.root", "LHC.BOFSU:POSITIONS_V::"+bpms[ui]), black);
 	//TGraph_reducePoints = 1; 
 
 	for (int di : datasets.keys)
 	{
 		pen p = StdPen(di+1);
-		//draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_min_diff"), "p,l,eb", cyan, mCi+1pt+cyan);
-		//draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_prob"), "p,l,eb", green, mCi+1pt+green);
-		//draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_mean_diff_sq"), "p,l,eb", magenta, mCi+1pt+magenta);
-		//draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_hist_chi_sq"), "p,l,eb", green, mCi+1pt+green);
+		//draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_min_diff"), "p,l,eb", cyan, mCi+1pt+cyan);
+		//draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_prob"), "p,l,eb", green, mCi+1pt+green);
+		//draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_mean_diff_sq"), "p,l,eb", magenta, mCi+1pt+magenta);
+		//draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c_hist_chi_sq"), "p,l,eb", green, mCi+1pt+green);
 		
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c"), "p,l,eb", blue+1pt, mCi+1pt+blue);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/c"), "p,l,eb", blue+1pt, mCi+1pt+blue);
 
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/c_fit"), "l", red+1.5pt);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/c_fit"), "l", red+1.5pt);
 	}
 
 	limits((t_min, -200), (t_max, +500), Crop);
@@ -104,12 +104,12 @@ for (int ui : units.keys)
 
 	for (int di : datasets.keys)
 	{
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a_p"), "p,l,eb", cyan, mCi+1pt+cyan);
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a_g"), "p,l,eb", green, mCi+1pt+green);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a_p"), "p,l,eb", cyan, mCi+1pt+cyan);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a_g"), "p,l,eb", green, mCi+1pt+green);
 		
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a"), "p,l,eb", blue, mCi+1pt+blue);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment.root", "global/"+units[ui]+"/a"), "p,l,eb", blue, mCi+1pt+blue);
 
-		draw(swToHours, rGetObj(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/a_fit"), "l", red+1.5pt);
+		draw(swToHours, RootGetObject(topDir + datasets[di]+"/alignment_fit.root", ""+units[ui]+"/a_fit"), "l", red+1.5pt);
 	}
 
 	limits((t_min, -5), (t_max, +5), Crop);
