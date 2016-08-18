@@ -1,0 +1,35 @@
+#!/bin/bash
+
+base_dir="/afs/cern.ch/user/j/jkaspar/www/totem/analyses/1380GeV,beta11"
+
+release=`date +%Y_%m_%d`
+release_dir="$base_dir/$release"
+
+echo ">> making release $release"
+
+if [ -d "$release_dir" ]
+then
+	echo "Release $release already exits."
+	exit 1
+fi
+
+# make release directory
+mkdir -p "$release_dir" || exit 1
+
+# copy plots
+cp -r "../plots" "$release_dir"
+cp -r "../summaries" "$release_dir"
+
+# copy and build notes
+cp -r "macros.tex" "$release_dir"
+cat "notes.tex" | sed "\
+		s|\\\\def\\\\baseDir.*$|\\\\def\\\\baseDir{http://cern.ch/jkaspar/totem/analyses/1380GeV,beta11}|; \
+		s|\\\\def\\\\release.*$|\\\\def\\\\release{$release}|; \
+	" > "$release_dir/notes.tex"
+cd "$release_dir"
+pdftex "notes.tex"
+
+# make latest link
+cd "$base_dir"
+rm -r "latest"
+ln -s "$release" "latest"

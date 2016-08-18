@@ -1,0 +1,78 @@
+\def\_{\leavevmode \kern.06em \vbox{\hrule width.5em}}
+
+%----------------------------------------------------------------------------------------------------
+
+\def\parseGet#1_#2;{%
+	\def\parseCurr{#1}%
+	\def\parseBuf{#2}%
+}
+
+\def\parseLoop{%
+	\expandafter\parseGet\parseBuf;%
+	\ifx\parseOutput\empty
+		\edef\parseOutput{\parseCurr}%
+	\else
+		\edef\parseOutput{\parseOutput\_\parseCurr}%
+	\fi
+	\ifx\parseBuf\empty
+	\else
+		\parseLoop
+	\fi
+}
+
+\def\parse#1{%
+	\def\parseBuf{#1_}%
+	\def\parseOutput{}%
+	\parseLoop
+	\parseOutput
+}
+
+%----------------------------------------------------------------------------------------------------
+
+\gdef\plot#1{%
+	\leavevmode
+	\pdfstartlink user {%
+	    /Subtype /Link
+	    /A << 
+	        /Type /Action 
+	        /S /URI 
+	        /URI (\baseDir/\release/plots/#1) 
+	    >>}%
+	\cBlue [\parse{#1}]\cBlack
+	\pdfendlink
+}
+
+%----------------------------------------------------------------------------------------------------
+
+\gdef\summary#1{%
+	\leavevmode
+	\pdfstartlink user {%
+	    /Subtype /Link
+	    /A << 
+	        /Type /Action 
+	        /S /URI 
+	        /URI (\baseDir/\release/summaries/#1) 
+	    >>}%
+	\cBlue [\parse{#1}]\cBlack
+	\pdfendlink
+}
+
+%----------------------------------------------------------------------------------------------------
+
+\gdef\link#1{%
+	\leavevmode
+	\pdfstartlink user {%
+	    /Subtype /Link
+	    /A << 
+	        /Type /Action 
+	        /S /URI 
+	        /URI (#1) 
+	    >>}%
+	\cBlue \parse{#1}\cBlack
+	\pdfendlink
+}
+
+
+%----------------------------------------------------------------------------------------------------
+
+\def\TODO#1{\cRed{TODO: #1}\cBlack}

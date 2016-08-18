@@ -1,0 +1,199 @@
+\input article
+\input macros
+
+\NumberSectionstrue
+
+\def\baseDir{/afs/cern.ch/work/j/jkaspar/analyses/elastic/1380GeV,beta11}
+\def\release{}
+
+
+%----------------------------------------------------------------------------------------------------
+
+\centerline{\SetFontSizesXX Elastic analysis, $\sqrt s = 2.76\un{TeV}$, $\be^* = 11\un{m}$ }
+\vskip2mm
+\centerline{version: {\it \number\day. \number\month. \number\year}}
+
+%----------------------------------------------------------------------------------------------------
+\section{Datasets}
+
+\> DS1: 11 Feb 2013, fill 3549, RPs at $5\un{\si}$
+\>> runs: 9009 and 9010
+\>> run 9008 not used - \TODO{why ?}
+\>> bunch 0
+
+\> DS2: 12 Feb 2013, fill 3556, RPs at $22\un{\si}$
+\>> runs: 9047 to 9050
+\>> no signs of elastic events -- analysis stopped
+
+\> DS3: 14 Feb 2013, fill 3564, RPs at $13\un{\si}$
+\>> runs: 9078
+\>> trigger on all available bunches
+
+%----------------------------------------------------------------------------------------------------
+\section{Data-taking conditions}
+
+\> RunLog entries
+\>> run 9008: \link{https://webafs01.cern.ch/totem-runlog/fcgi/runs/51743/}
+\>> run 9009: \link{https://webafs01.cern.ch/totem-runlog/fcgi/runs/51726/}
+\>> run 9010: \link{https://webafs01.cern.ch/totem-runlog/fcgi/runs/51727/}
+\>> run 9078: \link{https://webafs01.cern.ch/totem-runlog/fcgi/runs/51750/}
+
+\> OP LogBook
+\>> DS1: http://elogbook.cern.ch/eLogbook/eLogbook.jsp?shiftId=1051885
+
+\> emittance measurements
+\>> DS1: \summary{emittances.ods}
+\>> DS3: not available
+
+$$
+\hbox{beam divergence} = \sqrt{\ep_{\rm N} \over \be^* \ga}\ ,\qquad
+\hbox{beam size} = \sqrt{\ep_{\rm N} \be^*\over \ga}\ ,\qquad
+\hbox{vertex size} = {\hbox{beam size}\over \sqrt 2}
+$$
+
+\> rates as function of time: \plot{time_dependences/rates_vs_time.pdf}
+
+%----------------------------------------------------------------------------------------------------
+\section{Ntuples}
+
+\> only events with even numbers used, events with odd numbers blinded
+
+\subsection{Currently used}
+
+\> /castor/cern.ch/totem/offline/Analysis/2013/Physics/9009\_9010/v\_4.0/,\\ /castor/cern.ch/totem/offline/Analysis/2013/Physics/9078/v\_4.0/
+\>> RP/T1/T2 reconstruction
+\>> using preliminary alignment corrections - only horizontal shifts and tilts (the large effect most likely due to optics treated as misalignment in order to correct for it!)
+
+\subsection{Other}
+
+\> /castor/cern.ch/user/j/jkaspar/reco/sr+hsx/
+\>> only track-based alignment (sr+hsx)
+
+%----------------------------------------------------------------------------------------------------
+\section{Hit distributions}
+
+\> \plot{hit_distributions/hit_distributions.pdf} : hit distributions before and after elastic selection
+
+%----------------------------------------------------------------------------------------------------
+\section{Alignment}
+
+\> track-based alignment (relative among RPs):
+\>> horizontal RP missing: track-based alignment not performed in the usual manner
+\>> using track-based alignment results from previous runs, see my analysis-meeting presentation on 27 Feb 2013
+\>>> expected uncertainty about 20 um
+
+\> alignment w.r.t beam (using elastics, standard method)
+\>> horizontal: uncertainty about 20 um
+\>> vertical: uncertainty 50 um
+\>> tilts: uncertainty 2 mrad
+
+\> \plot{alignment/alignment.pdf} : \TODO{describe}
+\> \plot{alignment/alignment_method_x.pdf} : \TODO{describe}
+\> \plot{alignment/alignment_method_y.pdf} : \TODO{describe}
+
+%----------------------------------------------------------------------------------------------------
+\section{Optics}
+
+\> studies by Frici
+\>> use data /castor/cern.ch/user/j/jkaspar/reco/sr+hsx/
+
+\> \plot{optics/optics_test_basic.pdf} : \TODO{describe}
+\> \plot{optics/optics_test_summary.pdf} : \TODO{describe}
+\> \plot{optics/theta_vs_phi.pdf} : \TODO{describe}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{Reconstruction formulae}
+
+\> Monte-Carlo study: \plot{reco_formulae/plot_formulae_graphs.pdf}
+\>> \TODO{tune beam divergence and vertex size}: at the moment, angular resolution is good, but left-right vertex difference is too large in data wrt.~MC
+
+\> chosen formulae
+\>> $\th_x^*$: single arm = regr, double arm = regr (4 RP)
+\>> $\th_y^*$: single arm = hit, double arm = LRavg-hit
+\>> $x^*$: single arm = regr, double arm = LRavg-regr
+\>> $y^*$: single arm = regr, double arm = LRavg-regr 
+
+%----------------------------------------------------------------------------------------------------
+\section{Resolution}
+
+\> \TODO{resolution figures extracted from data -- to complement simulation results from the previous section}
+
+%----------------------------------------------------------------------------------------------------
+\section{Cuts/elastic tagging}
+
+\> applied cuts 
+\>> \plot{cuts/cut_1.pdf} : left-right collinearity in $\th_x^*$
+\>> \plot{cuts/cut_2.pdf} : left-right collinearity in $\th_y^*$
+\>> \plot{cuts/cut_5.pdf} : local position-angle correlation in vertical plane and right arm
+\>> \plot{cuts/cut_6.pdf} : local position-angle correlation in vertical plane and left arm
+\>> \plot{cuts/cut_7.pdf} : comparison of $x^*$ reconstructed from left and right arm (correlated to $\th_x^*$ due to optics imperfections)
+
+\> other cuts, not applied
+\>> \plot{cuts/cut_3.pdf} : right arm $x^*$ compatibility with expected size (modulo correlation with $\th_x^{*R}$)
+\>> \plot{cuts/cut_4.pdf} : left arm $x^*$ compatibility with expected size (modulo correlation with $\th_x^{*L}$)
+\>> \plot{cuts/cut_8.pdf} : comparison of $y^*$ reconstructed from left and right arm (correlated to $\th_y^*$ to allow for optics imperfections)
+
+\> effect of different cut combinations (rows) on various correlation plots (columns)
+\>> \plot{cuts/cut_matrix_DS1_45b_56t.pdf}: for DS1 and diagonal 45b--56t
+\>> \plot{cuts/cut_matrix_DS1_45t_56b.pdf}: for DS1 and diagonal 45t--56b
+
+%----------------------------------------------------------------------------------------------------
+\section{Background}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{Binning}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{Acceptance correction}
+
+\> \TODO{vertex smearing plays a role ?!}
+
+\> \plot{acceptance_correction/acc_corr_phi_lab.pdf} : \TODO{describe}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{Efficiency studies, pile-up, ...}
+
+\subsection{Trigger, DAQ}
+
+\subsection{3-out-of-4 efficiencies}
+
+\> Why 70-80\% efficiency in the right arm?
+\>> The same for both diagonals of DS1
+\>> Effect different in DS3: very good efficiency in right near, possibly reduced eff. in right far
+\>> 2D plots: inefficiency distributed all over the hit pattern
+
+\> \plot{efficiencies/eff3outof4.pdf} : single-RP (in)efficiencies as function of $\th_y^*$
+\> \plot{efficiencies/eff3outof4_2D.pdf} : single-RP (in)efficiencies as function of $\th_x^*$ and $\th_y^*$
+
+\subsection{2-out-of-4 efficiencies}
+
+\subsection{Pile-up}
+
+\> \plot{efficiencies/pileup.pdf} : \TODO{describe}
+\>> DS1: why so much higher in right arm (~40\%) than in left arm (~5\%)
+
+
+\subsection{Showers}
+
+\> \plot{mult_single_RP_2D.asy} : \TODO{describ}
+\> \plot{mult_single_RP.asy} : \TODO{describ}
+\> \plot{shower_sign_conf.asy} : \TODO{describ}
+
+%----------------------------------------------------------------------------------------------------
+\section{Unfolding of resolution effects}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{Systematic uncertainties}
+
+
+%----------------------------------------------------------------------------------------------------
+\section{$t$-distributions}
+
+\> \plot{t_distributions/t_dist.pdf} : \TODO{describe}
+
+\bye

@@ -1,0 +1,104 @@
+#!/bin/bash
+
+dataset="DS1"
+
+#----------------------------------------------------------------------------------------------------
+
+# compilation
+cd "../.."
+./run distributions.cc -no-bckg -no-run "$dataset" || exit 1
+./run distributions_anti.cc -no-bckg -no-run "$dataset" || exit 2
+cd - > /dev/null
+
+#----------------------------------------------------------------------------------------------------
+# cut combinations
+
+cut_combinations=(
+	""
+	"1"
+	"1,2"
+	"1,2,5"
+	"1,2,5,6"
+	"1,2,5,6,7"
+
+	"2"
+	"2,5"
+	"2,5,6"
+	"2,5,6,7"
+
+	"1,5"
+	"1,5,6"
+	"1,5,6,7"
+
+	"1,2,6"
+	"1,2,6,7"
+
+	"1,2,5,7"
+	
+	"1,2,7"
+	"1,2,3,4,5,6,7"
+
+	"3"
+	"4"
+	"5"
+	"6"
+	"7"
+	"8"
+)
+
+function RunCutCombinationReconstructions()
+{
+	for cut in "${cut_combinations[@]}"
+	do
+		tag="cuts:$cut"
+		if [ "$cut" == "" ]
+		then
+			tag="no_cuts"
+		fi
+	
+		echo $tag
+		mkdir -p "$tag"
+	
+		cd "$tag" || continue
+	
+		../../.distributions 45b_56t "-no-details" -input-dir "../.." -cuts "$cut" &> "log_45b_56t" &
+		../../.distributions 45t_56b "-no-details" -input-dir "../.." -cuts "$cut" &> "log_45t_56b" &
+
+		../../.distributions_anti 45b_56b "-no-details" -input-dir "../.." -cuts "$cut" &> "log_anti_45b_56b" &
+		../../.distributions_anti 45t_56t "-no-details" -input-dir "../.." -cuts "$cut" &> "log_anti_45t_56t" &
+	
+		cd - > /dev/null
+	done
+}
+
+RunCutCombinationReconstructions
+
+#----------------------------------------------------------------------------------------------------
+# n_si options
+
+n_si_options=(
+	2
+	3
+	4
+	5
+	6
+)
+
+function RunNSiReconstructions()
+{
+	for n_si in "${n_si_options[@]}"
+	do
+		tag="n_si=$n_si"
+		echo $tag
+		mkdir -p "$tag"
+	
+		cd "$tag" || continue
+	
+		../../.distributions 45b_56t "-no-details" -input-dir "../.." -n-si "$n_si" &> "log_45b_56t" &
+		../../.distributions 45t_56b "-no-details" -input-dir "../.." -n-si "$n_si" &> "log_45t_56b" &
+	
+		cd - > /dev/null
+	done
+}
+
+#RunNSiReconstructions

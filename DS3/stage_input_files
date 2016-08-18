@@ -1,0 +1,13 @@
+#!/bin/bash
+
+function StageFile()
+{
+	echo "* $1"
+	stager_get -S default -M "$prefix/$1"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+prefix="/castor/cern.ch/totem/offline/Analysis/2013/Physics/9078/v_4.0/";
+
+StageFile "val9078_totem_ntuple.root"

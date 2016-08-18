@@ -1,0 +1,15 @@
+#!/bin/bash
+
+function StageFile()
+{
+	echo "* $1"
+	#stager_get -S default -M "$prefix/$1"
+	stager_qry -M "$prefix/$1"
+}
+
+#----------------------------------------------------------------------------------------------------
+	
+prefix="/castor/cern.ch/user/j/jkaspar/reco/sr+hsx/"
+StageFile "9008_ntuple.root"
+StageFile "9009_ntuple.root"
+StageFile "9010_ntuple.root"

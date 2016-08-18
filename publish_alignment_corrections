@@ -1,0 +1,28 @@
+#!/bin/bash
+
+alDir="/afs/cern.ch/exp/totem/scratch/jkaspar/software/offline/424/src/TotemAlignment/RPData/LHC"
+
+alTag="el,hor_only"
+
+template="publish_alignment_template.py"
+
+function PublishAlignment()
+{
+	srcDir="$1"
+	destDir="$alDir/$2/$alTag"
+
+	echo "$srcDir --> $destDir"
+
+	mkdir -p "$destDir"
+	cp "$srcDir/alignment_fit.out" "$destDir"
+
+	cat "$template" | sed "\
+		s|\$dataset|$2|;\
+		s|\$dir|$destDir|;\
+		" > "$destDir/run.py"
+
+	cmsRun "$destDir/run.py" &> "$destDir/run.log"
+}
+
+PublishAlignment "DS1" "2013_02_11"
+PublishAlignment "DS3" "2013_02_14"

@@ -1,0 +1,160 @@
+#!/bin/bash
+
+datasets=(
+	"DS1"
+)
+
+list=(
+	"none"
+	
+#	#"si_th_y-1_th_x-1"
+#	"si_th_y-1_th_x+0"
+#	#"si_th_y-1_th_x+1"
+#	"si_th_y+1_th_x+0"
+#	
+#	"de_p+1"
+#
+#	"de_x+1+1"
+#	"de_x-1+1"
+#	"de_x+1-1"
+#
+#	"de_y+1+1"
+#	"de_y+1-1"
+#	"de_y-1-1"
+#
+#	"tilt+1+1"
+#	"tilt+1-1"
+#
+##	"L_y+1+1"
+##	"L_y-1+1"
+#
+##	"L_x+1+1"
+##	"L_x+1-1"
+#
+##	"v_x+1+1"
+##	"v_x+1-1"
+#
+#	"opt+1m1"
+#	"opt+1m2"
+#	"opt+1m3"
+#	"opt+1m4"
+#	"opt+1m5"
+#	"opt+1m6"
+#	"opt+1m7"
+#	"opt+1m8"
+)
+	
+events="1E6"
+
+useLxBatch="0"
+queue="1nd"
+bsub_options=""
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
+subdir="predefined_scenarios_eb"
+
+#----------------------------------------------------------------------------------------------------
+
+function RunCompile()
+{
+	mkdir -p "$dataset"
+
+	cp "mc.cc" "$dataset/mc.cc"
+
+	cd "$dataset"
+
+	g++ `root-config --libs` -lMinuit `root-config --cflags` -O3 -Wall -Wextra mc.cc -o mc || return 1
+
+	cd - > /dev/null
+
+	return 0
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function MakeJobFile()
+{
+	dir="$(pwd)/$subdir"
+	job_file="$dir/$scenario.job"
+
+	(
+		echo "export HOME=\"/afs/cern.ch/exp/totem/scratch/jkaspar\""
+		echo "export RFIO_USE_CASTOR_V2=YES"
+		echo "export STAGE_HOST=castorpublic"
+		echo "export STAGE_SVCCLASS=default"
+		echo "source \"/afs/cern.ch/cms/cmsset_default.sh\""
+		echo "cd \"/afs/cern.ch/exp/totem/scratch/jkaspar/software/offline/704/src\""
+		echo "eval \`scram runtime -sh\`"
+		cwd=`pwd`
+		echo "work_dir=\"$cwd\""
+		echo "cd \"\$work_dir\""
+		#echo ""
+		#echo "uname -a &> \"$dir/$scenario.debug_log\""
+		echo ""
+		echo "./mc \\"
+		echo "		-generator-mode \"weights\"\\"
+		echo "		-model-file \"$dir/../../input_distributions/t-distributions,pp,2760GeV.root\"\\"
+		echo "		-model-object \"full range/petrov (3p) [02]/PH/differential cross-section\"\\"
+		#echo "		-model-file \"$dir/../../input_distributions/fit_DS4_cdf.root\"\\"
+		#echo "		-model-object \"df\"\\"
+		echo "		-scenario-type \"predefined\"\\"
+		echo "		-scenario-label \"$scenario\"\\"
+		echo "		-seed \"1\"\\"
+		echo "		-output \"$dir/$scenario.root\"\\"
+		echo "		-events \"$events\"\\"
+		echo "		-binning \"eb\"\\"
+		echo "		-diff-plots \\"
+		echo "	&> \"$dir/$scenario.log\""
+
+	) > "$job_file"
+
+	chmod u+x "$job_file"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneJobLocal()
+{
+	"$job_file"
+	echo ">> done: $dataset, $scenario"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneJob()
+{
+	cd "$dataset" || return 1
+
+	mkdir -p "$subdir"
+
+	echo ">> RunOneJob: $dataset, $scenario"
+
+	MakeJobFile
+
+	if [ $useLxBatch -eq 0 ]
+	then
+		RunOneJobLocal &
+	else
+		result=`bsub -R "$bsub_options" -q $queue -o /dev/null -e /dev/null "$job_file"`
+		echo "    $result"
+	fi
+
+	cd - > /dev/null
+}
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
+for dataset in "${datasets[@]}"
+do
+	echo "* $dataset"
+
+	RunCompile || continue
+
+	for scenario in "${list[@]}"
+	do
+		RunOneJob
+	done
+done

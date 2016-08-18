@@ -1,0 +1,132 @@
+#!/bin/bash
+
+datasets=(
+	"DS2-corr_opt"
+	"DS4-nom_opt"
+	"DS4-corr_opt"
+	"DS4"
+)
+
+list=(
+	"res"
+	"misal"
+	"optics"
+	"bmom"
+	"res,misal,optics,bmom"
+)
+
+repetitions="25"
+events="4E8"
+
+useLxBatch="1"
+queue="1nd"
+bsub_options=""
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
+subdir="random_scenarios_eb"
+
+#----------------------------------------------------------------------------------------------------
+
+function RunCompile()
+{
+	mkdir -p "$dataset"
+
+	cp "mc.cc" "$dataset/mc.cc"
+
+	cd "$dataset"
+
+	g++ `root-config --libs` -lMinuit `root-config --cflags` -O3 -Wall mc.cc -o mc || return 1
+
+	cd - > /dev/null
+
+	return 0
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function MakeJobFile()
+{
+	dir="$(pwd)/$subdir/$group"
+	job_file="$dir/$seed.job"
+
+	(
+		echo "export HOME=\"/afs/cern.ch/exp/totem/scratch/jkaspar\""
+		echo "export RFIO_USE_CASTOR_V2=YES"
+		echo "export STAGE_HOST=castorpublic"
+		echo "export STAGE_SVCCLASS=default"
+		echo "export SCRAM_ARCH='slc5_amd64_gcc434'"
+		echo "source \"/afs/cern.ch/cms/cmsset_default.sh\""
+		echo "cd \"/afs/cern.ch/exp/totem/scratch/jkaspar/software/offline/424/src\""
+		echo "eval \`scram runtime -sh\`"
+		cwd=`pwd`
+		echo "work_dir=\"$cwd\""
+		echo "cd \"\$work_dir\""
+		echo ""
+		echo "./mc\\"
+		echo "		-generator-mode \"weights\"\\"
+		#echo "		-model-file \"$dir/../../../input_distributions/t-distributions,pp,1380GeV.root\"\\"
+		#echo "		-model-object \"full range/petrov (3p) [02]/PH/differential cross-section\"\\"
+		echo "		-model-file \"$dir/../../../input_distributions/fit_DS4_cdf.root\"\\"
+		echo "		-model-object \"df\"\\"
+		echo "		-scenario-type \"random\"\\"
+		echo "		-scenario-label \"$group\"\\"
+		echo "		-seed \"$seed\"\\"
+		echo "		-output \"$dir/$seed.root\"\\"
+		echo "		-events \"$events\"\\"
+		echo "		-binning \"eb\"\\"
+		echo "	&> \"$dir/$seed.log\""
+	) > "$job_file"
+
+	chmod u+x "$job_file"
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneJob()
+{
+	MakeJobFile
+
+	if [ $useLxBatch -eq 0 ]
+	then
+		"$job_file"
+		echo ">> done: $dataset, $group, $seed"
+	else
+		result=`bsub -R "$bsub_options" -q $queue -o /dev/null -e /dev/null "$job_file"`
+		echo "    $result"
+	fi
+}
+
+#----------------------------------------------------------------------------------------------------
+
+function RunOneGroup()
+{
+	cd "$dataset" || return 1
+
+	echo ">> RunOneGroup: $group"
+
+	mkdir -p "$subdir/$group"
+
+	for seed in `seq 1 $repetitions`
+	do
+		RunOneJob &
+	done
+
+	cd - > /dev/null
+}
+
+#----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------
+
+for dataset in "${datasets[@]}"
+do
+	echo "* $dataset"
+
+	RunCompile || continue
+
+	for group in "${list[@]}"
+	do
+		RunOneGroup
+	done
+done
