@@ -1,7 +1,7 @@
-#include "../common_definitions.h"
-#include "../common_algorithms.h"
+#include "common_definitions.h"
+#include "common_algorithms.h"
 #include "parameters.h"
-#include "../common.h"
+#include "common.h"
 
 #include "TFile.h"
 #include "TCanvas.h"
@@ -30,7 +30,10 @@ bool saveDetails = false;
 struct result
 {
 	double value, uncertainty;
-	result(double _v=0., double _u=0.) : value(_v), uncertainty(_u) {}
+
+	result(double _v=0., double _u=0.) : value(_v), uncertainty(_u)
+	{
+	}
 
 	static result Combine(const result &a, const result &b)
 	{
@@ -49,7 +52,7 @@ void DoHorizontalProfile(TGraph *g_t, TGraph *g_b,
 
 	TProfile *p = new TProfile("p", ";y   (mm);mean x   (mm)", 200, -15., +15.);
 
-	// make profile
+	// make profile - top pot
 	for (int i = 0; i < g_t->GetN(); i++)
 	{
 		double x, y;
@@ -58,6 +61,7 @@ void DoHorizontalProfile(TGraph *g_t, TGraph *g_b,
 			p->Fill(y, x);
 	}
 	
+	// make profile - bottom pot
 	for (int i = 0; i < g_b->GetN(); i++)
 	{
 		double x, y;
@@ -228,31 +232,21 @@ void DoHorizontalGraphFit(TGraph *g_t, TGraph *g_b,
 
 //----------------------------------------------------------------------------------------------------
 
-void DoHorizontalAlignment(TGraph *g_t, TGraph *g_b,
-	double y_min_top, double y_min_bot,
-	double y_max_top, double y_max_bot,
+void DoHorizontalAlignment(TGraph *g_t, TGraph *g_b, const Analysis::AlignmentYRange &r,
 	map<string, map<signed int, result> > &results, signed int period)
 {
 	printf(">> DoHorizontalAlignment\n");
 
 	TDirectory *baseDir = gDirectory;
 
-	/*
-	// apply safety margins?
-	y_min_top = fabs(y_min_top) + 0.2;
-	y_min_bot = fabs(y_min_bot) + 0.2;
-	y_max_top = fabs(y_max_top) - 0.2;
-	y_max_bot = fabs(y_max_bot) - 0.2;
-	*/
-
 	printf("\ty_min_top = %.3f, y_min_bot = %.3f\n\ty_max_top = %.3f, y_max_bot = %.3f\n",
-		y_min_top, y_min_bot, y_max_top, y_max_bot);
+		r.top_min, r.bot_min, r.top_max, r.bot_max);
 	
 	gDirectory = baseDir->mkdir("horizontal profile");
-	DoHorizontalProfile(g_t, g_b, y_min_top, y_min_bot, y_max_top, y_max_bot, results, period);
+	DoHorizontalProfile(g_t, g_b, r.top_min, r.bot_min, r.top_max, r.bot_max, results, period);
 
 	gDirectory = baseDir->mkdir("horizontal graph fit");
-	DoHorizontalGraphFit(g_t, g_b, y_min_top, y_min_bot, y_max_top, y_max_bot, results, period);
+	DoHorizontalGraphFit(g_t, g_b, r.top_min, r.bot_min, r.top_max, r.bot_max, results, period);
 	
 	results["a"][period] = result::Combine(results["a_p"][period], results["a_g"][period]);
 	results["b"][period] = result::Combine(results["b_p"][period], results["b_g"][period]);
@@ -284,7 +278,7 @@ bool operator < (entry &e1, entry &e2)
 //----------------------------------------------------------------------------------------------------
 
 void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
-	double set_y_min_t, double set_y_min_b, double set_y_max_t, double set_y_max_b,
+	const Analysis::AlignmentYRange &r,
 	map<string, map<signed int, result> > &results, signed int period)
 {
 	printf(">> DoVerticalAlignment\n");
@@ -293,9 +287,11 @@ void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
 	printf("\tbs_y_cut = %.3f mm\n", bs_y_cut);
 
 	// prepare samples, determine ranges
-	TH1D *y_hist = new TH1D("y_hist", "", 1000, -50., +50.);
+	TH1D *y_hist = new TH1D("y_hist", "", 1000, -50., +50.); y_hist->SetLineColor(4);
+	TH1D *y_hist_range = new TH1D("y_hist_range", "", 1000, -50., +50.); y_hist_range->SetLineColor(2);
 	
-	double y_min_b = 1E100, y_min_t = 1E100;		// all positive
+	// min and max are treated as possitive values for both top and bottom pots
+	double y_min_b = 1E100, y_min_t = 1E100;
 	double y_max_b = -1E100, y_max_t = -1E100;
 	
 	vector<entry> sample_t, sample_b;
@@ -306,8 +302,9 @@ void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
 	{
 		double y = ya[i];
 
+		// skip bad fits
 		if (y <= 0.)
-			printf("ERROR top\n");
+			continue;
 		
 		y_min_t = min(y_min_t, y);
 		y_max_t = max(y_max_t, y);
@@ -322,8 +319,9 @@ void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
 	{
 		double y = ya[i];
 
+		// skip bad fits
 		if (y >= 0.)
-			printf("ERROR bottom\n");
+			continue;
 		
 		y_min_b = min(y_min_b, -y);
 		y_max_b = max(y_max_b, -y);
@@ -332,22 +330,44 @@ void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
 		sample_b.push_back(entry(-y, wa[i]));
 	}
 
-	y_hist->Write();
-	delete y_hist;
 
+	// determine ranges
 	printf("\tbefore cuts\n");
 	printf("\t\ty_min_b = %.3f mm, y_min_t = %.3f mm\n", y_min_b, y_min_t);
 	printf("\t\ty_max_b = %.3f mm, y_max_t = %.3f mm\n", y_max_b, y_max_t);
 
-	y_min_t = max(y_min_t + bs_y_cut, set_y_min_t);
-	y_min_b = max(y_min_b + bs_y_cut, -set_y_max_b);
+	y_min_t = max(y_min_t + bs_y_cut, r.top_min);
+	y_min_b = max(y_min_b + bs_y_cut, -r.bot_max);
 
-	y_max_t = min(y_max_t - bs_y_cut, set_y_max_t);
-	y_max_b = min(y_max_b - bs_y_cut, -set_y_min_b);
+	y_max_t = min(y_max_t - bs_y_cut, r.top_max);
+	y_max_b = min(y_max_b - bs_y_cut, -r.bot_min);
 
 	printf("\tafter cuts\n");
 	printf("\t\ty_min_b = %.3f mm, y_min_t = %.3f mm\n", y_min_b, y_min_t);
 	printf("\t\ty_max_b = %.3f mm, y_max_t = %.3f mm\n", y_max_b, y_max_t);
+
+	// build y distribution respecting ranges
+	for (auto entry : sample_t)
+		if (entry.v > y_min_t && entry.v < y_max_t)
+			y_hist_range->Fill(entry.v, entry.w);
+
+	for (auto entry : sample_b)
+		if (entry.v > y_min_b && entry.v < y_max_b)
+			y_hist_range->Fill(-entry.v, entry.w);
+
+	y_hist_range->Fit("gaus");
+
+	// save and free histograms
+	TCanvas *c = new TCanvas();
+	c->SetName("y_hist");
+	c->SetLogy(1);
+	y_hist->Draw();
+	y_hist_range->Draw("same");
+	c->Write();
+
+	delete c;
+	delete y_hist;
+	delete y_hist_range;
 
 	//printf("\t\t\t - sorting\n");
 	//sort(sample_t.begin(), sample_t.end());
@@ -483,7 +503,7 @@ void DoVerticalAlignment(TGraph *g_t, TGraph *gw_t, TGraph *g_b, TGraph *gw_b,
 				sum += y_hist_t->GetBinContent(i);
 				g_y_cumul_t->SetPoint(g_y_cumul_t->GetN(), y_hist_t->GetBinCenter(i), sum);
 			}
-			
+
 			sum = 0.;
 			for (int i = 1; i <= y_hist_b->GetNbinsX(); i++)
 			{
@@ -700,7 +720,8 @@ void DoVerticalRelNFAlignment(TGraph *g_t_n, TGraph *g_t_f, TGraph *g_b_n, TGrap
 		g_t_n->GetPoint(i, xn, yn);
 		g_t_f->GetPoint(i, xf, yf);
 
-		if (fabs(yn) > 7.)	// TODO
+		// TODO: 7?
+		if (fabs(yn) > 7.)
 			p->Fill(yn, yf-yn);
 	}
 	
@@ -710,14 +731,14 @@ void DoVerticalRelNFAlignment(TGraph *g_t_n, TGraph *g_t_f, TGraph *g_b_n, TGrap
 		g_b_n->GetPoint(i, xn, yn);
 		g_b_f->GetPoint(i, xf, yf);
 
-		if (fabs(yn) > 7.)	// TODO
+		if (fabs(yn) > 7.)
 			p->Fill(yn, yf-yn);
 	}
 	
 	TF1 *ff = new TF1("ff", "[0] + x*[1]");
 	ff->SetLineColor(2);
 	ff->SetLineWidth(1);
-	p->Fit(ff, "Q", "", -25., +25.);	// TODO
+	p->Fit(ff, "Q", "", -25., +25.);
 	p->Write();
 
 	printf("\ta = %.2f +- %.2f mrad\n", ff->GetParameter(1)*1E3, ff->GetParError(1)*1E3);
@@ -746,7 +767,12 @@ int main(int argc, char **argv)
 
 	char buf[1000];
 
-	vector<string> units = { "L_F", "L_N", "R_N", "R_F"	};
+	vector<string> units = {
+		"L_F",
+		"L_N",
+		"R_N",
+		"R_F"
+	};
 
 	// get list of periods
 	vector<signed int> periods;
@@ -765,9 +791,6 @@ int main(int argc, char **argv)
 
 	for (unsigned int pi = 0; pi < periods.size(); pi++)
 	{
-		//if (pi > 100)
-		//.	break;
-
 		printf("\n\n************************************************** period %i **************************************************\n", periods[pi]);
 		sprintf(buf, "period %i", periods[pi]);
 		TDirectory *perDir = outF->mkdir(buf);
@@ -790,28 +813,24 @@ int main(int argc, char **argv)
 			}
 
 			// skip periods with too little data
-			/*
 			unsigned int effective_entries = g_t->GetN() + g_b->GetN();
-			if (effective_entries < 400) {
+			if (effective_entries < 100)
+			{
 				printf("too few entries: %u, skipping.\n", effective_entries);
 				continue;
 			}
-			*/
+
+			// get y ranges
+			const Analysis::AlignmentYRange &r = anal.alignmentYRanges[units[ui]];
 	
 			sprintf(buf, "unit %s", units[ui].c_str());
 			TDirectory *unitDir = perDir->mkdir(buf);
 			
 			gDirectory = unitDir->mkdir("horizontal");
-			DoHorizontalAlignment(g_t, g_b,
-				anal.alignmentYRanges[units[ui]].top_min, anal.alignmentYRanges[units[ui]].bot_min,
-				anal.alignmentYRanges[units[ui]].top_max, anal.alignmentYRanges[units[ui]].bot_max,
-				results[units[ui]], periods[pi]);
+			DoHorizontalAlignment(g_t, g_b, r, results[units[ui]], periods[pi]);
 			
 			gDirectory = unitDir->mkdir("vertical");
-			DoVerticalAlignment(g_t, gw_t, g_b, gw_b,
-				anal.alignmentYRanges[units[ui]].top_min, anal.alignmentYRanges[units[ui]].bot_min,
-				anal.alignmentYRanges[units[ui]].top_max, anal.alignmentYRanges[units[ui]].bot_max,
-				results[units[ui]], periods[pi]);
+			DoVerticalAlignment(g_t, gw_t, g_b, gw_b, r, results[units[ui]], periods[pi]);
 		}
 	
 		/*

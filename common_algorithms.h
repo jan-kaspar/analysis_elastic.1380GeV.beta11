@@ -285,7 +285,7 @@ bool SkipBlindedEvent(unsigned int event_num)
 
 //----------------------------------------------------------------------------------------------------
 
-bool SkipRun(unsigned int run, unsigned int /* file */, bool /* strict */ = true)
+bool SkipRun(unsigned int /*run*/, unsigned int /* file */, bool /* strict */ = true)
 {
 	// TODO - why ??
 	//if (run == 9008)

@@ -27,7 +27,7 @@ drawGridDef = true;
 
 TGraph_errorBar = None;
 
-real t_min = 1.5, t_max = 4.0;
+real t_min = 1.8, t_max = 3.7;
 
 
 NewPad(false);

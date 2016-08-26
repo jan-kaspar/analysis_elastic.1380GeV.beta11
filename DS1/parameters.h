@@ -66,17 +66,17 @@ void Init_base()
 	anal.L_int_eff = 0.;	// mb^-1, diagonal dependent
 	
 	anal.alignment_t0 = 6000.;		// beginning of the first time-slice
-	anal.alignment_ts = 15.*60.;	// time-slice in s
+	anal.alignment_ts = 30.*60.;	// time-slice in s
 	
 	anal.eff_th_y_min = 200E-6; // TODO
 	
 	anal.t_min_fit = 0.027; // TODO
 
 	// TODO: check
-	anal.alignmentYRanges["L_F"] = Analysis::AlignmentYRange(-30., -3.0, 3.6, 30.);
-	anal.alignmentYRanges["L_N"] = Analysis::AlignmentYRange(-30., -3.0, 3.4, 30.);
-	anal.alignmentYRanges["R_N"] = Analysis::AlignmentYRange(-30., -3.2, 3.0, 30.);
-	anal.alignmentYRanges["R_F"] = Analysis::AlignmentYRange(-30., -3.2, 3.0, 30.);
+	anal.alignmentYRanges["L_F"] = Analysis::AlignmentYRange(-8., -3.0, 3.6, +8.);
+	anal.alignmentYRanges["L_N"] = Analysis::AlignmentYRange(-8., -3.0, 3.4, +8.);
+	anal.alignmentYRanges["R_N"] = Analysis::AlignmentYRange(-7., -3.2, 3.0, +7.);
+	anal.alignmentYRanges["R_F"] = Analysis::AlignmentYRange(-7., -3.2, 3.0, +7.);
 
 	// TODO
 	unsmearing_file = "";	// diagonal dependent
@@ -120,8 +120,8 @@ void Init_45b_56t()
 	anal.cut3_a = +451.; anal.cut3_b = 0.; anal.cut3_si = 0.09;
 	anal.cut4_a = -476.; anal.cut4_b = 0.; anal.cut4_si = 0.09;
 
-	anal.cut5_a = -0.01; anal.cut5_b = +0.02; anal.cut5_si = 0.035;
-	anal.cut6_a = 0.004; anal.cut6_b = -0.02; anal.cut6_si = 0.035;
+	anal.cut5_a = -0.01; anal.cut5_b = +0.035; anal.cut5_si = 0.032;
+	anal.cut6_a = 0.004; anal.cut6_b = -0.030; anal.cut6_si = 0.032;
 
 	anal.cut7_a = 1095.; anal.cut7_c = +0.0; anal.cut7_si = 0.060;
 	anal.cut8_a = 0.; anal.cut8_c = +0.0; anal.cut8_si = 0.125;
@@ -170,8 +170,8 @@ void Init_45t_56b()
 	anal.cut3_a = +426.; anal.cut3_b = 0.; anal.cut3_si = 0.09;
 	anal.cut4_a = -461.; anal.cut4_b = 0.; anal.cut4_si = 0.09;
 
-	anal.cut5_a = -0.01; anal.cut5_b = -0.04; anal.cut5_si = 0.035;
-	anal.cut6_a = 0.004; anal.cut6_b = +0.02; anal.cut6_si = 0.035;
+	anal.cut5_a = -0.01; anal.cut5_b = -0.055; anal.cut5_si = 0.035;
+	anal.cut6_a = 0.004; anal.cut6_b = +0.030; anal.cut6_si = 0.035;
 
 	anal.cut7_a = 1073.; anal.cut7_c = -0.; anal.cut7_si = 0.060;
 	anal.cut8_a = 0.; anal.cut8_c = +0.0; anal.cut8_si = 0.125;
