@@ -466,9 +466,9 @@ int main(int argc, char **argv)
 	TH2D *h_th_x_diffLR_vs_vtx_x = new TH2D("h_th_x_diffLR_vs_vtx_x", ";vtx_{x};#theta_{x}^{R} - #theta_{x}^{L}", 100, -300E-3, +300E-3, 120, -120E-6, +120E-6);
 	
 	TProfile *p_th_x_diffLR_vs_th_x = new TProfile("p_th_x_diffLR_vs_th_x", ";#theta_{x};#theta_{x}^{R} - #theta_{x}^{L}", 200, -400E-6, +400E-6);
-	TProfile *p_th_y_diffLR_vs_th_y = new TProfile("p_th_y_diffLR_vs_th_y", ";#theta_{y};#theta_{y}^{R} - #theta_{y}^{L}", 500, -500E-6, +500E-6);
-	TProfile *p_th_y_L_diffNF_vs_th_y_L = new TProfile("p_th_y_L_diffNF_vs_th_y_L", ";#theta_{y}^{L};#theta_{y}^{LF} - #theta_{y}^{LN}", 500, -500E-6, +500E-6);
-	TProfile *p_th_y_R_diffNF_vs_th_y_R = new TProfile("p_th_y_R_diffNF_vs_th_y_R", ";#theta_{y}^{R};#theta_{y}^{RF} - #theta_{y}^{RN}", 500, -500E-6, +500E-6);
+	TProfile *p_th_y_diffLR_vs_th_y = new TProfile("p_th_y_diffLR_vs_th_y", ";#theta_{y};#theta_{y}^{R} - #theta_{y}^{L}", 250, -500E-6, +500E-6);
+	TProfile *p_th_y_L_diffNF_vs_th_y_L = new TProfile("p_th_y_L_diffNF_vs_th_y_L", ";#theta_{y}^{L};#theta_{y}^{LF} - #theta_{y}^{LN}", 250, -500E-6, +500E-6);
+	TProfile *p_th_y_R_diffNF_vs_th_y_R = new TProfile("p_th_y_R_diffNF_vs_th_y_R", ";#theta_{y}^{R};#theta_{y}^{RF} - #theta_{y}^{RN}", 250, -500E-6, +500E-6);
 	
 	TProfile *p_th_x_diffLR_vs_vtx_x = new TProfile("p_th_x_diffLR_vs_vtx_x", ";vtx_{x};#theta_{x}^{R} - #theta_{x}^{L}", 200, -400E-3, +400E-3);
 	
@@ -1105,20 +1105,20 @@ int main(int argc, char **argv)
 	
 		h_th_y_L_vs_th_y_R->Fill(k.th_y_R, k.th_y_L);
 
-		h_th_x->Fill(k.th_x);
-		h_th_y->Fill(k.th_y);
-		h_th_y_flipped->Fill(-k.th_y);
+		h_th_x->Fill(k.th_x, norm_corr);
+		h_th_y->Fill(k.th_y, norm_corr);
+		h_th_y_flipped->Fill(-k.th_y, norm_corr);
 		
-		h_th_x_L->Fill(k.th_x_L);
-		h_th_x_R->Fill(k.th_x_R);
+		h_th_x_L->Fill(k.th_x_L, norm_corr);
+		h_th_x_R->Fill(k.th_x_R, norm_corr);
 	
-		h_th_y_L->Fill(k.th_y_L);
-		h_th_y_R->Fill(k.th_y_R);
+		h_th_y_L->Fill(k.th_y_L, norm_corr);
+		h_th_y_R->Fill(k.th_y_R, norm_corr);
 
-		h_th_y_L_F->Fill(k.th_y_L_F);
-		h_th_y_L_N->Fill(k.th_y_L_N);
-		h_th_y_R_N->Fill(k.th_y_R_N);
-		h_th_y_R_F->Fill(k.th_y_R_F);
+		h_th_y_L_F->Fill(k.th_y_L_F, norm_corr);
+		h_th_y_L_N->Fill(k.th_y_L_N, norm_corr);
+		h_th_y_R_N->Fill(k.th_y_R_N, norm_corr);
+		h_th_y_R_F->Fill(k.th_y_R_F, norm_corr);
 
 		// fill vertex histograms
 
@@ -1404,8 +1404,8 @@ int main(int argc, char **argv)
 	// fit histograms
 	//double th_y_low_bound = (diagonal == d45b_56t) ? (anal.th_y_lcut_L+anal.th_y_lcut_R)/2. + 5E-6 : -((anal.th_y_hcut_L+anal.th_y_hcut_R)/2. - 5E-6);
 	//double th_y_high_bound = (diagonal == d45b_56t) ? (anal.th_y_hcut_L+anal.th_y_hcut_R)/2. - 5E-6 : -((anal.th_y_lcut_L+anal.th_y_lcut_R)/2. + 5E-6);
-	double th_y_low_bound = (diagonal == d45b_56t) ? 220E-6 : -400E-6;
-	double th_y_high_bound = (diagonal == d45b_56t) ? 400E-6 : -220E-6;
+	double th_y_low_bound = (diagonal == d45b_56t) ? 250E-6 : -400E-6;
+	double th_y_high_bound = (diagonal == d45b_56t) ? 400E-6 : -250E-6;
 
 	printf("\n* th_y fit bounds: from %E to %E\n", th_y_low_bound, th_y_high_bound);
 

@@ -29,7 +29,7 @@ for (int dsi : datasets.keys)
 		draw(scale(1/3600, 1e6), RootGetObject(f, "time dependences/p_diffNF_th_y_L_vs_time"), "eb,d0", StdPen(dgi+1), dgn_labs[dgi]);
 	}
 }
-limits((time_min, -10), (time_max, +2), Crop);
+limits((time_min, -2), (time_max, +2), Crop);
 xaxis(YEquals(0, false), dotted);
 AttachLegend(NW, NE);
 
@@ -49,7 +49,7 @@ for (int dsi : datasets.keys)
 	}
 }
 
-limits((time_min, -0.2), (time_max, +1.1), Crop);
+limits((time_min, -2), (time_max, +2), Crop);
 xaxis(YEquals(0, false), dotted);
 
 //----------------------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ for (int dsi : datasets.keys)
 	}
 }
 
-limits((time_min, -20), (time_max, +30), Crop);
+//limits((time_min, -20), (time_max, +30), Crop);
 xaxis(YEquals(0, false), dotted);
 
 

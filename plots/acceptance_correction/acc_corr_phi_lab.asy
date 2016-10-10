@@ -3,7 +3,10 @@ import pad_layout;
 
 string topDir = "../../";
 
-string dataSets[] = { "DS1", "DS3" };
+string dataSets[] = {
+	"DS1",
+//	"DS3"
+};
 
 real th_y_low_45b[] = { 210, 500 };
 real th_y_low_45t[] = { -210, -500 };
@@ -28,9 +31,9 @@ for (int dsi : dataSets.keys)
 
 	
 	// 45 bottom - 56 top
-	TH2_z_min = 5;
-	TH2_z_max = 7;
-	draw(scale(1e6, 1e6), rGetObj(topDir + dataSets[dsi]+"/distributions_45b_56t.root", "normalization/h_th_y_vs_th_x_normalized"), "def");
+	TH2_z_min = 10^5;
+	TH2_z_max = 10^7;
+	draw(scale(1e6, 1e6), RootGetObject(topDir + dataSets[dsi]+"/distributions_45b_56t.root", "normalization/h_th_y_vs_th_x_normalized"), "def");
 	
 	real th_y_low = th_y_low_45b[dsi], th_y_high = 600;
 	
@@ -46,7 +49,7 @@ for (int dsi : dataSets.keys)
 	// 45 top - 56 bottom
 	//TH2_z_min = 7;
 	//TH2_z_max = 9.6;
-	draw(scale(1e6, 1e6), rGetObj(topDir + dataSets[dsi]+"/distributions_45t_56b.root", "normalization/h_th_y_vs_th_x_normalized"), "p");
+	draw(scale(1e6, 1e6), RootGetObject(topDir + dataSets[dsi]+"/distributions_45t_56b.root", "normalization/h_th_y_vs_th_x_normalized"), "p");
 	
 	real th_y_low = th_y_low_45t[dsi], th_y_high = -600;
 	

@@ -3,7 +3,10 @@ import pad_layout;
 
 string topDir = "../../";
 
-string datasets[] = { "DS1", "DS3" };
+string datasets[] = {
+	"DS1",
+//	"DS3"
+};
 
 string diagonals[] = { "45b_56t", "45t_56b" };
 string dgn_labels[] = { "45b -- 56t", "45t -- 56b" };
