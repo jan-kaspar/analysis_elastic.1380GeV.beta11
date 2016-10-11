@@ -50,7 +50,7 @@ for (int dsi : datasets.keys)
 			//string opt = "vl";
 			string opt = "eb";
 	
-			draw(shift(0, 1.3)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$");
+			draw(shift(0, 1.2)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$");
 
 			draw(tr, RootGetObject(f, "selected - angles/h_th_y_" + rps[rpi]), opt, StdPen(++ci), dgn_label + ": $\th_y^*$");
 		}
