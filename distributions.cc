@@ -822,17 +822,14 @@ int main(int argc, char **argv)
 		Kinematics k = DoReconstruction(h_al, env);
 
 		// alternative theta_x reconstruction
+		/*
 		const double de_s_FN = 5372.; // mm
-		const double dLxds_L = (env.L_x_L_F - env.L_x_L_N) / de_s_FN;
-		const double dvxds_L = (env.v_x_L_F - env.v_x_L_N) / de_s_FN;
-		const double dLxds_R = (env.L_x_R_F - env.L_x_R_N) / de_s_FN;
-		const double dvxds_R = (env.v_x_R_F - env.v_x_R_N) / de_s_FN;
-
 		double vtx_x_L = (-env.L_x_L_F * h_al.x_L_N + env.L_x_L_N * h_al.x_L_F) / (env.L_x_L_N * env.v_x_L_F - env.L_x_L_F * env.v_x_L_N);
 		double vtx_x_R = (-env.L_x_R_F * h_al.x_R_N + env.L_x_R_N * h_al.x_R_F) / (env.L_x_R_N * env.v_x_R_F - env.L_x_R_F * env.v_x_R_N);
 
-		double ta_x_L = -1./dLxds_L * ( (h_al.x_L_F - h_al.x_L_N)/de_s_FN - dvxds_L * vtx_x_L );
-		double ta_x_R = +1./dLxds_R * ( (h_al.x_R_F - h_al.x_R_N)/de_s_FN - dvxds_R * vtx_x_R );
+		double ta_x_L = -1./env.dLds_x_L * ( (h_al.x_L_F - h_al.x_L_N)/de_s_FN - env.dvds_x_L * vtx_x_L );
+		double ta_x_R = +1./env.dLds_x_R * ( (h_al.x_R_F - h_al.x_R_N)/de_s_FN - env.dvds_x_R * vtx_x_R );
+		*/
 
 		// alternative theta_y reconstruction
 		double D_y_L = - env.L_y_L_N * env.v_y_L_F + env.L_y_L_F * env.v_y_L_N;
@@ -858,16 +855,15 @@ int main(int argc, char **argv)
 			);
 
 		printf("    left : x_F=%+.4f, x_N=%+.4f, loc_th_x=%+.4E, vtx_x=%+.4f, dvx/ds=%+.4E, dLx/ds=%+.4f, th*_x=%+.3E\n",
-			h_al.x_L_F, h_al.x_L_N, (h_al.x_L_F - h_al.x_L_N)/de_s_FN, vtx_x_L, dvxds_L, dLxds_L, ta_x_L
+			h_al.x_L_F, h_al.x_L_N, (h_al.x_L_F - h_al.x_L_N)/de_s_FN, vtx_x_L, env.dvds_x_L, env.dLds_x_L, ta_x_L
 			);
 
 		printf("    right: x_F=%+.4f, x_N=%+.4f, loc_th_x=%+.4E, vtx_x=%+.4f, dvx/ds=%+.4E, dLx/ds=%+.4f, th*_x=%+.3E\n",
-			h_al.x_R_F, h_al.x_R_N, (h_al.x_R_F - h_al.x_R_N)/de_s_FN, vtx_x_R, dvxds_R, dLxds_R, ta_x_R
+			h_al.x_R_F, h_al.x_R_N, (h_al.x_R_F - h_al.x_R_N)/de_s_FN, vtx_x_R, env.dvds_x_R, env.dLds_x_R, ta_x_R
 			);
 
 		printf("    left + right: th*_x=%.3E, th*_y=%.3E\n", k.th_x, k.th_y);
 		*/
-
 
 		// cut evaluation
 		CutData cd;

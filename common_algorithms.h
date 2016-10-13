@@ -12,18 +12,22 @@ Kinematics DoReconstruction(const HitData &h, const Environment &env)
 {
 	Kinematics k;
 
+	const double de_s_FN = 5372.; // mm
+
 	// single-arm reconstruction
 	// theta_x: linear regression
 	// theta_y: from hit positions
 	// vtx_x: linear regression
 	// vtx_y: linear regression
 	double D_x_L = - env.L_x_L_N * env.v_x_L_F + env.L_x_L_F * env.v_x_L_N;
-	k.th_x_L = (env.v_x_L_F * h.x_L_N - env.v_x_L_N * h.x_L_F) / D_x_L;
 	k.vtx_x_L = (env.L_x_L_F * h.x_L_N - env.L_x_L_N * h.x_L_F) / D_x_L;
+	//k.th_x_L = (env.v_x_L_F * h.x_L_N - env.v_x_L_N * h.x_L_F) / D_x_L;
+	k.th_x_L = -1./env.dLds_x_L * ( (h.x_L_F - h.x_L_N)/de_s_FN - env.dvds_x_L * k.vtx_x_L );
 	
 	double D_x_R = env.L_x_R_N * env.v_x_R_F - env.L_x_R_F * env.v_x_R_N;
-	k.th_x_R = (env.v_x_R_F * h.x_R_N - env.v_x_R_N * h.x_R_F) / D_x_R;
 	k.vtx_x_R = (-env.L_x_R_F * h.x_R_N + env.L_x_R_N * h.x_R_F) / D_x_R;
+	//k.th_x_R = (env.v_x_R_F * h.x_R_N - env.v_x_R_N * h.x_R_F) / D_x_R;
+	k.th_x_R = +1./env.dLds_x_R * ( (h.x_R_F - h.x_R_N)/de_s_FN - env.dvds_x_R * k.vtx_x_R );
 
 	k.th_y_L_N = - h.y_L_N / env.L_y_L_N;
   	k.th_y_L_F = - h.y_L_F / env.L_y_L_F;
