@@ -4,7 +4,7 @@ import pad_layout;
 string topDir = "../../";
 
 string datasets[] = {
-	"DS1_no_add_alignment",
+	//"DS1_no_add_alignment",
 	"DS1",
 };
 
@@ -34,6 +34,9 @@ for (int dsi : datasets.keys)
 
 	for (int rpi : rps.keys)
 	{
+		if (rpi == 2)
+			NewRow();
+
 		NewPad("$\th_{x,y}^*\ung{\mu rad}$");
 		scale(Linear, Log);
 	
@@ -47,12 +50,17 @@ for (int dsi : datasets.keys)
 	
 			string f = topDir + datasets[dsi] + "/distributions_" + dgns[dgni] + ".root";
 	
-			//string opt = "vl";
-			string opt = "eb";
+			string opt = "vl";
+			//string opt = "eb";
 	
+			TH1_x_min = -inf; TH1_x_max = +inf;
 			draw(shift(0, 1.2)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$");
 
-			draw(tr, RootGetObject(f, "selected - angles/h_th_y_" + rps[rpi]), opt, StdPen(++ci), dgn_label + ": $\th_y^*$");
+			if (dgns[dgni] == "45b_56t")
+				TH1_x_min = +230e-6; 
+			else
+				TH1_x_max = -230e-6;
+			draw(tr, RootGetObject(f, "selected - angles/h_th_y_" + rps[rpi]), opt, StdPen(++ci)+1.5pt, dgn_label + ": $\th_y^*$");
 		}
 	
 		f_leg = BuildLegend(replace(datasets[dsi], "_", "\_"));
