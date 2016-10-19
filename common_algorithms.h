@@ -15,10 +15,6 @@ Kinematics DoReconstruction(const HitData &h, const Environment &env)
 	const double de_s_FN = 5372.; // mm
 
 	// single-arm reconstruction
-	// theta_x: linear regression
-	// theta_y: from hit positions
-	// vtx_x: linear regression
-	// vtx_y: linear regression
 	double D_x_L = - env.L_x_L_N * env.v_x_L_F + env.L_x_L_F * env.v_x_L_N;
 	k.vtx_x_L = (env.L_x_L_F * h.x_L_N - env.L_x_L_N * h.x_L_F) / D_x_L;
 	//k.th_x_L = (env.v_x_L_F * h.x_L_N - env.v_x_L_N * h.x_L_F) / D_x_L;
@@ -46,27 +42,11 @@ Kinematics DoReconstruction(const HitData &h, const Environment &env)
 	k.vtx_y_R = (-env.L_y_R_F * h.y_R_N + env.L_y_R_N * h.y_R_F) / D_y_R;
 
 	// double-arm reconstruction
-	// theta_x: linear regression using all 4 measurements
-	// theta_y: L-R average of single-arm hit results
-	// vtx_x: L-R average of single-arm regression results
-	// vtx_y: L-R average of single-arm regression results
 	k.vtx_x = (k.vtx_x_L + k.vtx_x_R) / 2.;
 	k.vtx_y = (k.vtx_y_L + k.vtx_y_R) / 2.;
 	
 	k.th_x = (k.th_x_L + k.th_x_R) / 2.;
 	k.th_y = (k.th_y_L + k.th_y_R) / 2.;
-
-	/*
-	double SLL_x = + env.L_x_L_F*env.L_x_L_F + env.L_x_L_N*env.L_x_L_N + env.L_x_R_N*env.L_x_R_N + env.L_x_R_F*env.L_x_R_F;
-	double SLv_x = - env.L_x_L_F*env.v_x_L_F - env.L_x_L_N*env.v_x_L_N + env.L_x_R_N*env.v_x_R_N + env.L_x_R_F*env.v_x_R_F;
-	double Svv_x = + env.v_x_L_F*env.v_x_L_F + env.v_x_L_N*env.v_x_L_N + env.v_x_R_N*env.v_x_R_N + env.v_x_R_F*env.v_x_R_F;
-	double D_x = (SLL_x * Svv_x - SLv_x * SLv_x);
-	
-	double SLh_x = - env.L_x_L_F*h.x_L_F - env.L_x_L_N*h.x_L_N + env.L_x_R_N*h.x_R_N + env.L_x_R_F*h.x_R_F;
-	double Svh_x = + env.v_x_L_F*h.x_L_F + env.v_x_L_N*h.x_L_N + env.v_x_R_N*h.x_R_N + env.v_x_R_F*h.x_R_F;
-	
-	k.th_x = (Svv_x * SLh_x - SLv_x * Svh_x) / D_x;
-	*/
 
 	// theta reconstruction
 	double th_sq = k.th_x*k.th_x + k.th_y*k.th_y;
