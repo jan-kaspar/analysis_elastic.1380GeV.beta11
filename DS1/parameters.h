@@ -57,7 +57,7 @@ void Init_base()
 	anal.use_3outof4_efficiency_fits = false;
 	anal.use_pileup_efficiency_fits = false;
 	anal.inefficiency_3outof4 = 0.;				// diagonal dependent
-	anal.inefficiency_shower_near = 0.03;
+	anal.inefficiency_shower_near = 0.;
 	anal.inefficiency_pile_up = 0.;				// diagonal dependent
 	anal.inefficiency_trigger = 0.;
 
