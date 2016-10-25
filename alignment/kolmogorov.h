@@ -99,7 +99,7 @@ double KolmogorovTestLoop(Iterator beg_1, Iterator end_1, Iterator beg_2, Iterat
 		if (fabs(diff) > fabs(max_diff))
 			max_diff = diff;
 		
-		printf("  next = %i, x_next = %.3f, diff = %.3f\n", next, x_next, diff);
+		//printf("  next = %i, x_next = %.3f, diff = %.3f\n", next, x_next, diff);
 
 		if (g_diff != NULL)
 		{

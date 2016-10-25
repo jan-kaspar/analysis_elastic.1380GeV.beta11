@@ -1,0 +1,36 @@
+first: test1 test2 fit_th_y_diff match_th_y_scale match_th_y_crop match_th_y_fixed_scale kolmogorov_validation
+
+test1: test1.cc
+	g++ -O3 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		test1.cc -o test1
+
+test2: test2.cc
+	g++ -O3 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		test2.cc -o test2
+
+fit_th_y_diff: fit_th_y_diff.cc
+	g++ -O3 --std=c++11 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		fit_th_y_diff.cc -o fit_th_y_diff
+
+match_th_y_scale: match_th_y_scale.cc
+	g++ -O3 --std=c++11 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		match_th_y_scale.cc -o match_th_y_scale
+
+match_th_y_crop: match_th_y_crop.cc kolmogorov.h
+	g++ -O3 --std=c++11 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		match_th_y_crop.cc -o match_th_y_crop
+
+match_th_y_fixed_scale: match_th_y_fixed_scale.cc
+	g++ -O3 --std=c++11 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		match_th_y_fixed_scale.cc -o match_th_y_fixed_scale
+
+kolmogorov_validation: kolmogorov_validation.cc kolmogorov.h
+	g++ -O3 --std=c++11 -Wall -Wextra\
+		`root-config --libs` -lMinuit -lMinuit2 `root-config --cflags` \
+		kolmogorov_validation.cc -o kolmogorov_validation
