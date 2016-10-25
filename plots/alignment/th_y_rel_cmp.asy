@@ -3,10 +3,20 @@ import pad_layout;
 
 string topDir = "../../";
 
-string datasets[] = { "DS1" };
+string datasets[] = {
+	//"DS1_no_add_alignment",
+	//"DS1",
+	"DS1_rel_al_only"
+};
 
-string dgns[] = { "45b_56t", "45t_56b" };
-string dgn_labs[] = { "45 bot -- 56 top", "45 top -- 56 bot" };
+string dgns[], dgn_labs[];
+dgns.push("45b_56t"); dgn_labs.push("45 bot -- 56 top");
+dgns.push("45t_56b"); dgn_labs.push("45 top -- 56 bot");
+
+
+xSizeDef = 8cm;
+
+xTicksDef = LeftTicks(100., 50.);
 
 //----------------------------------------------------------------------------------------------------
 
@@ -20,16 +30,16 @@ for (int dsi : datasets.keys)
 		if (dgns[dgni] == "45b_56t")
 		{
 			x_min = 0;
-			x_max = 400;
+			x_max = 500;
 		} else {
-			x_min = -400;
+			x_min = -500;
 			x_max = 0;
 		}
 
 		NewRow();
 
 		NewPad(false);
-		label(datasets[dsi] + ", " + dgn_labs[dgni]);
+		label(replace(datasets[dsi], "_", "\_") + ", " + dgn_labs[dgni]);
 
 		yTicksDef = RightTicks(1., 0.5);
 

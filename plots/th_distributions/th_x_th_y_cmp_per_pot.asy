@@ -6,6 +6,7 @@ string topDir = "../../";
 string datasets[] = {
 	//"DS1_no_add_alignment",
 	"DS1",
+	//"DS1_glob_al_45t_56b",
 };
 
 string dgns[] = {
@@ -54,7 +55,7 @@ for (int dsi : datasets.keys)
 			//string opt = "eb";
 	
 			TH1_x_min = -inf; TH1_x_max = +inf;
-			draw(shift(0, 1.2)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$");
+			draw(shift(0, 1.15)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$ (scaled)");
 
 			if (dgns[dgni] == "45b_56t")
 				TH1_x_min = +230e-6; 

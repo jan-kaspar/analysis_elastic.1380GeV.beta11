@@ -8,7 +8,8 @@ TH2_palette = Gradient(blue, heavygreen, yellow, red, black);
 yTicksDef = RightTicks(Step = 50, step = 10);
 
 string dataSets[] = {
-	"DS1"
+	"DS1",
+	//"DS1_no_add_alignment",
 };
 
 string dgns[] = { "45b_56t", "45t_56b" };
@@ -38,6 +39,6 @@ for (int dsi : dataSets.keys)
 		}
 		*/
 
-		AttachLegend(dataSets[dsi]+", "+dgn_labs[dgi], N, N);
+		AttachLegend(replace(dataSets[dsi], "_", "\_") + ", "+dgn_labs[dgi], N, N);
 	}
 }
