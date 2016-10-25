@@ -102,16 +102,16 @@ void Init_45b_56t()
 	//	1st column: from near-far relative alignment
 	//	2nd column: from left-right relative alignment
 	//	3rd column: from theta*_x vs theta*_y alignment
-	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = +3E-3	+ 135E-3	+ 0E-3;
-	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = -3E-3	+ 135E-3	+ 0E-3;
-	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = -2E-3	+ 135E-3	- 0E-3;
-	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = +2E-3	+ 135E-3	- 0E-3;
+	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = +3E-3	+ 135E-3	+ 20.946E3 * 17E-6;
+	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = -3E-3	+ 135E-3	+ 20.964E3 * 17E-6;
+	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = -2E-3	+ 135E-3	- 18.405E3 * 17E-6;
+	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = +2E-3	+ 135E-3	- 18.100E3 * 17E-6;
 
 	alignmentSources.push_back(alSrc);
 
 	// analysis settings
 	anal.cut1_a = 1.; anal.cut1_c = +1E-6; anal.cut1_si = 26E-6;
-	anal.cut2_a = 1.; anal.cut2_c = +7E-6; anal.cut2_si = 30E-6;
+	anal.cut2_a = 1.; anal.cut2_c = +1.4E-6; anal.cut2_si = 30E-6;
 
 	anal.cut3_a = +451.; anal.cut3_b = 0.; anal.cut3_si = 0.09;
 	anal.cut4_a = -476.; anal.cut4_b = 0.; anal.cut4_si = 0.09;
@@ -148,10 +148,10 @@ void Init_45t_56b()
 	//	1st column: from near-far relative alignment
 	//	2nd column: from left-right relative alignment
 	//	3rd column: from theta*_x vs theta*_y alignment
-	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = +100E-3	+ 69E-3	- 0E-3;
-	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = -100E-3	+ 69E-3	- 0E-3;
-	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = -7E-3		+ 69E-3	+ 0E-3;
-	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = +7E-3		+ 69E-3	+ 0E-3;
+	alSrc.cnst.a_L_F = 0E-3; alSrc.cnst.b_L_F = 0E-3; alSrc.cnst.c_L_F = +100E-3	+ 69E-3	- 20.946E3 * 8E-6;
+	alSrc.cnst.a_L_N = 0E-3; alSrc.cnst.b_L_N = 0E-3; alSrc.cnst.c_L_N = -100E-3	+ 69E-3	- 20.964E3 * 8E-6;
+	alSrc.cnst.a_R_N = 0E-3; alSrc.cnst.b_R_N = 0E-3; alSrc.cnst.c_R_N = -7E-3		+ 69E-3	+ 18.405E3 * 8E-6;
+	alSrc.cnst.a_R_F = 0E-3; alSrc.cnst.b_R_F = 0E-3; alSrc.cnst.c_R_F = +7E-3		+ 69E-3	+ 18.100E3 * 8E-6;
 
 	alignmentSources.push_back(alSrc);
 
