@@ -15,6 +15,7 @@
 #include "TTree.h"
 
 #include <cmath>
+#include <deque>
 
 using namespace std;
 
@@ -454,6 +455,25 @@ int main(int argc, char **argv)
 	TH2D *h_y_R_ratioFN_vs_y_R_N = new TH2D("h_y_R_ratioFN_vs_y_R_N", ";y^{RN};y^{RF} / y^{RN}", 300, -30., +30., 300, 1.08, 1.14);
 
 	// book angluar histograms
+	unsigned int th_y_bins_N;
+	double *th_y_bins;
+	{
+		deque<double> th_y_bins_deq;
+		double th_y = 150E-6;
+		while (th_y < 500E-6)
+		{
+			th_y_bins_deq.push_front(-th_y);
+			th_y_bins_deq.push_back(+th_y);
+
+			th_y += 0.05 * th_y;
+		}
+
+		th_y_bins_N = th_y_bins_deq.size() - 1;
+		th_y_bins = new double[th_y_bins_N + 1];
+		for (unsigned int i = 0; i <= th_y_bins_N; i++)
+			th_y_bins[i] = th_y_bins_deq[i];
+	}
+
 	TH1D *th_x_diffLR = new TH1D("th_x_diffLR", ";#theta_{x}^{R} - #theta_{x}^{L}", 1000, -500E-6, +500E-6); th_x_diffLR->Sumw2();
 	TH1D *th_y_diffLR = new TH1D("th_y_diffLR", ";#theta_{y}^{R} - #theta_{y}^{L}", 500, -50E-6, +50E-6); th_y_diffLR->Sumw2();
 
@@ -466,14 +486,14 @@ int main(int argc, char **argv)
 	TH2D *h_th_x_diffLR_vs_vtx_x = new TH2D("h_th_x_diffLR_vs_vtx_x", ";vtx_{x};#theta_{x}^{R} - #theta_{x}^{L}", 100, -300E-3, +300E-3, 120, -120E-6, +120E-6);
 	
 	TProfile *p_th_x_diffLR_vs_th_x = new TProfile("p_th_x_diffLR_vs_th_x", ";#theta_{x};#theta_{x}^{R} - #theta_{x}^{L}", 200, -400E-6, +400E-6);
-	TProfile *p_th_y_diffLR_vs_th_y = new TProfile("p_th_y_diffLR_vs_th_y", ";#theta_{y};#theta_{y}^{R} - #theta_{y}^{L}", 250, -500E-6, +500E-6);
-	TProfile *p_th_y_L_diffNF_vs_th_y_L = new TProfile("p_th_y_L_diffNF_vs_th_y_L", ";#theta_{y}^{L};#theta_{y}^{LF} - #theta_{y}^{LN}", 250, -500E-6, +500E-6);
-	TProfile *p_th_y_R_diffNF_vs_th_y_R = new TProfile("p_th_y_R_diffNF_vs_th_y_R", ";#theta_{y}^{R};#theta_{y}^{RF} - #theta_{y}^{RN}", 250, -500E-6, +500E-6);
+	TProfile *p_th_y_diffLR_vs_th_y = new TProfile("p_th_y_diffLR_vs_th_y", ";#theta_{y};#theta_{y}^{R} - #theta_{y}^{L}", th_y_bins_N, th_y_bins);
+	TProfile *p_th_y_L_diffNF_vs_th_y_L = new TProfile("p_th_y_L_diffNF_vs_th_y_L", ";#theta_{y}^{L};#theta_{y}^{LF} - #theta_{y}^{LN}", th_y_bins_N, th_y_bins);
+	TProfile *p_th_y_R_diffNF_vs_th_y_R = new TProfile("p_th_y_R_diffNF_vs_th_y_R", ";#theta_{y}^{R};#theta_{y}^{RF} - #theta_{y}^{RN}", th_y_bins_N, th_y_bins);
 	
 	TProfile *p_th_x_diffLR_vs_vtx_x = new TProfile("p_th_x_diffLR_vs_vtx_x", ";vtx_{x};#theta_{x}^{R} - #theta_{x}^{L}", 200, -400E-3, +400E-3);
 	
-	TH1D *th_x_diffLR_safe = new TH1D("th_x_diffLR_safe", ";#theta_{x}^{R} - #theta_{x}^{L}", 100, 0., 0.); th_x_diffLR_safe->Sumw2();
-	TH1D *th_y_diffLR_safe = new TH1D("th_y_diffLR_safe", ";#theta_{y}^{R} - #theta_{y}^{L}", 100, 0., 0.); th_y_diffLR_safe->Sumw2();
+	TH1D *th_x_diffLR_safe = new TH1D("th_x_diffLR_safe", ";#theta_{x}^{R} - #theta_{x}^{L}", 100, -150E-6, +150E-6); th_x_diffLR_safe->Sumw2();
+	TH1D *th_y_diffLR_safe = new TH1D("th_y_diffLR_safe", ";#theta_{y}^{R} - #theta_{y}^{L}", 100, -150E-6, +150E-6); th_y_diffLR_safe->Sumw2();
 
 	TProfile *p_th_x_vs_th_y = new TProfile("p_th_x_vs_th_y", ";#theta_{y}^{R};#theta_{x}", 100, -500E-6, +500E-6);
 	TProfile *p_th_x_L_vs_th_y_L = new TProfile("p_th_x_L_vs_th_y_L", ";#theta_{y}^{L};#theta_{x}^{L}", 100, -500E-6, +500E-6);
@@ -491,7 +511,6 @@ int main(int argc, char **argv)
 	
 	TH1D *h_th_x = new TH1D("h_th_x", ";#theta_{x}", 250, -500E-6, +500E-6); h_th_x->SetLineColor(1);
 	TH1D *h_th_y = new TH1D("h_th_y", ";#theta_{y}", 250, -500E-6, +500E-6); h_th_y->SetLineColor(1);
-	TH1D *h_th_y_flipped = new TH1D("h_th_y_flipped", ";#theta_{y}", 250, -500E-6, +500E-6); h_th_y_flipped->SetLineColor(1);
 	
 	TH1D *h_th_x_L = new TH1D("h_th_x_L", ";#theta_{x}^{L}", 250, -500E-6, +500E-6); h_th_x_L->SetLineColor(2);
 	TH1D *h_th_x_R = new TH1D("h_th_x_R", ";#theta_{x}^{R}", 250, -500E-6, +500E-6); h_th_x_R->SetLineColor(4);
@@ -503,6 +522,11 @@ int main(int argc, char **argv)
 	TH1D *h_th_y_L_N = new TH1D("h_th_y_L_N", ";#theta_{y}^{L_N}", 250, -500E-6, +500E-6); h_th_y_L_N->SetLineColor(6);
 	TH1D *h_th_y_R_N = new TH1D("h_th_y_R_N", ";#theta_{y}^{R_N}", 250, -500E-6, +500E-6); h_th_y_R_N->SetLineColor(4);
 	TH1D *h_th_y_R_F = new TH1D("h_th_y_R_F", ";#theta_{y}^{R_F}", 250, -500E-6, +500E-6); h_th_y_R_F->SetLineColor(7);
+	
+	TGraph *g_th_y_L_F_vs_th_x_L = new TGraph(); g_th_y_L_F_vs_th_x_L->SetName("g_th_y_L_F_vs_th_x_L"); g_th_y_L_F_vs_th_x_L->SetTitle(";#theta_{x}^{L};#theta_{y}^{L_F}");
+	TGraph *g_th_y_L_N_vs_th_x_L = new TGraph(); g_th_y_L_N_vs_th_x_L->SetName("g_th_y_L_N_vs_th_x_L"); g_th_y_L_N_vs_th_x_L->SetTitle(";#theta_{x}^{L};#theta_{y}^{L_N}");
+	TGraph *g_th_y_R_N_vs_th_x_R = new TGraph(); g_th_y_R_N_vs_th_x_R->SetName("g_th_y_R_N_vs_th_x_R"); g_th_y_R_N_vs_th_x_R->SetTitle(";#theta_{x}^{R};#theta_{y}^{R_N}");
+	TGraph *g_th_y_R_F_vs_th_x_R = new TGraph(); g_th_y_R_F_vs_th_x_R->SetName("g_th_y_R_F_vs_th_x_R"); g_th_y_R_F_vs_th_x_R->SetTitle(";#theta_{x}^{R};#theta_{y}^{R_F}");
 
 	// book alternative angular histograms
 	/*
@@ -843,8 +867,7 @@ int main(int argc, char **argv)
 		/*
 		printf("run=%u, event=%5u\n", ev.run_num, ev.event_num);
 
-		printf("run=%u, event=%5u | %.3f, %.3f, %.3f, %.3f | %.3f, %.3f, %.3f, %.3f\n",
-				ev.run_num, ev.event_num,
+		printf("    %.3f, %.3f, %.3f, %.3f | %.3f, %.3f, %.3f, %.3f\n",
 				ev.h.x_L_F, ev.h.x_L_N, ev.h.x_R_N, ev.h.x_R_F,
 				h_al.x_L_F, h_al.x_L_N, h_al.x_R_N, h_al.x_R_F
 			  );
@@ -863,6 +886,10 @@ int main(int argc, char **argv)
 			);
 
 		printf("    left + right: th*_x=%.3E, th*_y=%.3E\n", k.th_x, k.th_y);
+
+		printf("    left  : x*=%+.4E, theta*_x=%+.4E, theta*_y=%+.4E\n", k.vtx_x_L, k.th_x_L, k.th_y_L);
+		printf("    right : x*=%+.4E, theta*_x=%+.4E, theta*_y=%+.4E\n", k.vtx_x_R, k.th_x_R, k.th_y_R);
+		printf("    global: x*=%+.4E, theta*_x=%+.4E, theta*_y=%+.4E\n", k.vtx_x, k.th_x, k.th_y);
 		*/
 
 		// cut evaluation
@@ -1108,7 +1135,7 @@ int main(int argc, char **argv)
 		//double safe_th_y_min = (anal.th_y_lcut_L + anal.th_y_lcut_R)/2. + 5E-6;
 		//double safe_th_y_max = (anal.th_y_hcut_L + anal.th_y_hcut_R)/2. - 5E-6;
 		double safe_th_y_min = 220E-6;
-		double safe_th_y_max = 500E-6;
+		double safe_th_y_max = 450E-6;
 		bool safe = fabs(k.th_y) > safe_th_y_min && fabs(k.th_y) < safe_th_y_max;
 
 		if (safe)
@@ -1136,7 +1163,6 @@ int main(int argc, char **argv)
 
 		h_th_x->Fill(k.th_x, norm_corr);
 		h_th_y->Fill(k.th_y, norm_corr);
-		h_th_y_flipped->Fill(-k.th_y, norm_corr);
 		
 		h_th_x_L->Fill(k.th_x_L, norm_corr);
 		h_th_x_R->Fill(k.th_x_R, norm_corr);
@@ -1149,8 +1175,16 @@ int main(int argc, char **argv)
 		h_th_y_R_N->Fill(k.th_y_R_N, norm_corr);
 		h_th_y_R_F->Fill(k.th_y_R_F, norm_corr);
 
-		// fill vertex histograms
+		if (detailsLevel >= 1)
+		{
+			int idx = g_th_y_L_F_vs_th_x_L->GetN();
+			g_th_y_L_F_vs_th_x_L->SetPoint(idx, k.th_x_L, k.th_y_L_F);
+            g_th_y_L_N_vs_th_x_L->SetPoint(idx, k.th_x_L, k.th_y_L_N);
+			g_th_y_R_N_vs_th_x_R->SetPoint(idx, k.th_x_R, k.th_y_R_N);
+            g_th_y_R_F_vs_th_x_R->SetPoint(idx, k.th_x_R, k.th_y_R_F);
+		}
 
+		// fill vertex histograms
 		h_vtx_x->Fill(k.vtx_x);
 		h_vtx_x_L->Fill(k.vtx_x_L);
 		h_vtx_x_R->Fill(k.vtx_x_R);
@@ -1859,7 +1893,6 @@ int main(int argc, char **argv)
 	
 	h_th_x->Write();
 	h_th_y->Write();
-	h_th_y_flipped->Write();
 	
 	h_th_x_L->Write();
 	h_th_x_R->Write();
@@ -1871,6 +1904,11 @@ int main(int argc, char **argv)
 	h_th_y_L_N->Write();
 	h_th_y_R_N->Write();
 	h_th_y_R_F->Write();
+
+	g_th_y_L_F_vs_th_x_L->Write();
+    g_th_y_L_N_vs_th_x_L->Write();
+	g_th_y_R_N_vs_th_x_R->Write();
+    g_th_y_R_F_vs_th_x_R->Write();
 
 	{
 		double x[] = {0, 1, 2, 3};
@@ -2186,9 +2224,6 @@ int main(int argc, char **argv)
 	// print counters
 	for (map<unsigned int, unsigned long>::iterator it = n_ev_cut.begin(); it != n_ev_cut.end(); ++it)
 		printf("\tcut %u: %lu\n", it->first, it->second);
-
-	// TODO: remove
-	env.Print();
 
 	return 0;
 }
