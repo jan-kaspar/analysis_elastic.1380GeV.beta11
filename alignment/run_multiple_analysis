@@ -1,0 +1,29 @@
+#!/bin/bash
+
+base_dirs=(
+	"1E4,0E-6,0E-6"
+	"1E5,0E-6,0E-6"
+)
+
+seeds_from="1"
+seeds_to="20"
+
+#----------------------------------------------------------------------------------------------------
+
+make || exit 1
+
+#----------------------------------------------------------------------------------------------------
+
+for base_dir in ${base_dirs[*]}
+do
+	for seed in `seq $seeds_from $seeds_to`
+	do
+		dir="$base_dir/$seed"
+
+		echo "* $dir"
+	
+		#././match_th_y_crop --inputDir "$dir" --outputDir "$dir" &> "$dir/match_th_y_crop.log_run" &
+
+		././match_th_y_scale_fcn --inputDir "$dir" --outputDir "$dir" &> "$dir/match_th_y_scale_fcn.log_run" &
+	done
+done

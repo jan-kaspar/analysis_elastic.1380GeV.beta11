@@ -19,11 +19,13 @@ DS1/background_study
 
 DS3/reco_config_files
 
+alignment/compile_results
 alignment/fit_th_y_diff
 alignment/kolmogorov_validation
 alignment/match_th_y_crop
-alignment/match_th_y_fixed_scale
-alignment/match_th_y_scale
+alignment/match_th_y_scale_fcn
+alignment/match_th_y_scale_hist
+alignment/simulation
 alignment/test1
 alignment/test2
 
