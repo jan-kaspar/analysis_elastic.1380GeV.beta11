@@ -522,6 +522,9 @@ int main(int argc, char **argv)
 	TH1D *h_th_y_L_N = new TH1D("h_th_y_L_N", ";#theta_{y}^{L_N}", 250, -500E-6, +500E-6); h_th_y_L_N->SetLineColor(6);
 	TH1D *h_th_y_R_N = new TH1D("h_th_y_R_N", ";#theta_{y}^{R_N}", 250, -500E-6, +500E-6); h_th_y_R_N->SetLineColor(4);
 	TH1D *h_th_y_R_F = new TH1D("h_th_y_R_F", ";#theta_{y}^{R_F}", 250, -500E-6, +500E-6); h_th_y_R_F->SetLineColor(7);
+
+	TH1D *h_th_x_safe = new TH1D("h_th_x_safe", ";#theta_{x}", 250, -500E-6, +500E-6); h_th_x_safe->SetLineColor(1);
+	TH1D *h_th_y_safe = new TH1D("h_th_y_safe", ";#theta_{y}", 250, -500E-6, +500E-6); h_th_y_safe->SetLineColor(1);
 	
 	TGraph *g_th_y_L_F_vs_th_x_L = new TGraph(); g_th_y_L_F_vs_th_x_L->SetName("g_th_y_L_F_vs_th_x_L"); g_th_y_L_F_vs_th_x_L->SetTitle(";#theta_{x}^{L};#theta_{y}^{L_F}");
 	TGraph *g_th_y_L_N_vs_th_x_L = new TGraph(); g_th_y_L_N_vs_th_x_L->SetName("g_th_y_L_N_vs_th_x_L"); g_th_y_L_N_vs_th_x_L->SetTitle(";#theta_{x}^{L};#theta_{y}^{L_N}");
@@ -755,6 +758,7 @@ int main(int argc, char **argv)
 
 	// zero counters
 	unsigned long n_ev_full = 0;
+	unsigned long n_ev_safe = 0;
 	map<unsigned int, unsigned long> n_ev_cut;
 	for (unsigned int ci = 1; ci <= anal.N_cuts; ++ci)
 		n_ev_cut[ci] = 0;
@@ -1142,6 +1146,8 @@ int main(int argc, char **argv)
 		{
 			th_y_diffLR_safe->Fill(k.th_y_R - k.th_y_L);
 			th_x_diffLR_safe->Fill(k.th_x_R - k.th_x_L);
+
+			n_ev_safe++;
 		}
 	
 		p_th_x_vs_th_y->Fill(k.th_y, k.th_x);
@@ -1174,6 +1180,12 @@ int main(int argc, char **argv)
 		h_th_y_L_N->Fill(k.th_y_L_N, norm_corr);
 		h_th_y_R_N->Fill(k.th_y_R_N, norm_corr);
 		h_th_y_R_F->Fill(k.th_y_R_F, norm_corr);
+
+		if (safe)
+		{
+			h_th_x_safe->Fill(k.th_x, norm_corr);
+			h_th_y_safe->Fill(k.th_y, norm_corr);
+		}
 
 		if (detailsLevel >= 1)
 		{
@@ -1426,6 +1438,8 @@ int main(int argc, char **argv)
 	printf("N_el = %u\n", N_el);
 	printf("N_el_T2trig = %u\n", N_el_T2trig);
 	printf("N_4outof4_T2trig = %u\n", N_4outof4_T2trig);
+
+	printf("n_ev_safe = %lu\n", n_ev_safe);
 
 	// derived plots
 	TGraphErrors *th_y_sigmaLR_vs_th_y = new TGraphErrors();
@@ -1905,6 +1919,9 @@ int main(int argc, char **argv)
 	h_th_y_R_N->Write();
 	h_th_y_R_F->Write();
 
+	h_th_x_safe->Write();
+	h_th_y_safe->Write();
+	
 	g_th_y_L_F_vs_th_x_L->Write();
     g_th_y_L_N_vs_th_x_L->Write();
 	g_th_y_R_N_vs_th_x_R->Write();
