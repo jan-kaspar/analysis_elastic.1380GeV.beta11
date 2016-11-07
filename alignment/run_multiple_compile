@@ -1,0 +1,26 @@
+#!/bin/bash
+
+make "compile_results"
+
+echo ""
+echo "* exp, 6E3, no bias"
+./compile_results --inputDir exp,6E3,0E-6,0E-6/ --inputFile match_th_y_scale_fcn.out --from 1 --to 20
+
+echo ""
+echo "* exp, 6E3, si bias"
+./compile_results --inputDir exp,6E3,0E-6,0E-6/ --inputFile match_th_y_scale_fcn_si_bias.out --from 1 --to 20
+
+
+
+
+echo ""
+echo "* exp, 1E5, no bias"
+./compile_results --inputDir exp,1E5,0E-6,0E-6/ --inputFile match_th_y_scale_fcn.out --from 1 --to 10
+
+echo ""
+echo "* exp, 1E5, si bias"
+./compile_results --inputDir exp,1E5,0E-6,0E-6/ --inputFile match_th_y_scale_fcn_si_bias.out --from 1 --to 10
+
+echo ""
+echo "* non-exp, 1E5, no bias"
+./compile_results --inputDir non-exp,1E5,0E-6,0E-6/ --inputFile match_th_y_scale_fcn.out --from 1 --to 10

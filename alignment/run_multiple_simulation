@@ -1,13 +1,31 @@
 #!/bin/bash
 
-events="1E6"
+#nonExponential="f"
+nonExponential="t"
+
+#events="6E3"
+events="1E5"
+
 de_th_y_45b="0E-6"
 de_th_y_45t="0E-6"
 
-seeds_from="6"
-seeds_to="10"
+seeds_from="1"
 
-base_dir="${events},${de_th_y_45b},${de_th_y_45t}"
+seeds_to="10"
+#seeds_to="20"
+
+#----------------------------------------------------------------------------------------------------
+
+if [ "$nonExponential" == "f" ]
+then
+	shape="exp"
+	expCom=""
+else
+	shape="non-exp"
+	expCom="--nonExponential"
+fi
+
+base_dir="${shape},${events},${de_th_y_45b},${de_th_y_45t}"
 
 #----------------------------------------------------------------------------------------------------
 
@@ -17,13 +35,13 @@ make "simulation" || exit 1
 
 for seed in `seq $seeds_from $seeds_to`
 do
-	echo $seed
+	echo "* $base_dir/$seed"
 
 	mkdir -p "$base_dir/$seed"
 
-	./simulation --seed "$seed" --diagonal "45b_56t" --nEv "$events" --de_th_y "${de_th_y_45b}" \
+	./simulation --seed "$seed" --diagonal "45b_56t" --nEv "$events" --de_th_y "${de_th_y_45b}" $expCom \
 		--outputDir "$base_dir/$seed" &> "$base_dir/$seed/distributions_45b_56t.log_run" &
 
-	./simulation --seed "$seed" --diagonal "45t_56b" --nEv "$events" --de_th_y "${de_th_y_45t}" \
+	./simulation --seed "$seed" --diagonal "45t_56b" --nEv "$events" --de_th_y "${de_th_y_45t}" $expCom \
 		--outputDir "$base_dir/$seed" &> "$base_dir/$seed/distributions_45t_56b.log_run" &
 done

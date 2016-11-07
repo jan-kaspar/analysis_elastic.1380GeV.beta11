@@ -1,12 +1,16 @@
 #!/bin/bash
 
 base_dirs=(
-	"1E4,0E-6,0E-6"
-	"1E5,0E-6,0E-6"
+	#"1E4,0E-6,0E-6"
+	#"1E5,0E-6,0E-6"
+
+	#"exp,6E3,0E-6,0E-6"
+	"exp,1E5,0E-6,0E-6"
+	#"non-exp,1E5,0E-6,0E-6"
 )
 
 seeds_from="1"
-seeds_to="20"
+seeds_to="10"
 
 #----------------------------------------------------------------------------------------------------
 
@@ -24,6 +28,9 @@ do
 	
 		#././match_th_y_crop --inputDir "$dir" --outputDir "$dir" &> "$dir/match_th_y_crop.log_run" &
 
-		././match_th_y_scale_fcn --inputDir "$dir" --outputDir "$dir" &> "$dir/match_th_y_scale_fcn.log_run" &
+		#././match_th_y_scale_fcn --inputDir "$dir" --outputDir "$dir" &> "$dir/match_th_y_scale_fcn.log_run" &
+
+		tag="match_th_y_scale_fcn_si_bias"
+		././match_th_y_scale_fcn --inputDir "$dir" --outputDir "$dir" --outputTag "$tag" --si_th_ref "124.49E-6" &> "$dir/$tag.log_run" &
 	done
 done

@@ -14,6 +14,10 @@ void PrintUsage()
 {
 	printf("USAGE: compile_results <option> <option> ...\n");
 	printf("OPTIONS:\n");
+	printf("    --inputDir\n");
+	printf("    --inputFile\n");
+	printf("    --from\n");
+	printf("    --to\n");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -65,6 +69,12 @@ int main(int argc, const char **argv)
 	// parse command line
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
+		{
+			PrintUsage();
+			return 0;
+		}
+
 		if (strcmp(argv[i], "--inputDir") == 0)
 		{
 			if (i + 1 >= argc)
@@ -118,6 +128,7 @@ int main(int argc, const char **argv)
 		}
 
 		printf("ERROR: unknown option '%s'\n", argv[i]);
+		PrintUsage();
 		return 1;
 	}
 
