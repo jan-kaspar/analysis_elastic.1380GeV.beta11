@@ -327,10 +327,11 @@ int main(int argc, const char **argv)
 		f_in = TFile::Open((inputDir + "/distributions_" + diagonal + ".root").c_str());
 		gDirectory = d_dataset->mkdir(diagonal.c_str());
 
-		DoMatch("L_F", (TGraph *)f_in->Get("selected - angles/g_th_y_L_F_vs_th_x_L"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_F");
-		DoMatch("L_N", (TGraph *)f_in->Get("selected - angles/g_th_y_L_N_vs_th_x_L"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_N");
-		DoMatch("R_N", (TGraph *)f_in->Get("selected - angles/g_th_y_R_N_vs_th_x_R"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_N");
-		DoMatch("R_F", (TGraph *)f_in->Get("selected - angles/g_th_y_R_F_vs_th_x_R"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_F");
+		// important: for DS1 set it to 200E-6
+		DoMatch("L_F", (TGraph *)f_in->Get("selected - angles/g_th_y_L_F_vs_th_x_L"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_F");
+		DoMatch("L_N", (TGraph *)f_in->Get("selected - angles/g_th_y_L_N_vs_th_x_L"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_N");
+		DoMatch("R_N", (TGraph *)f_in->Get("selected - angles/g_th_y_R_N_vs_th_x_R"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_N");
+		DoMatch("R_F", (TGraph *)f_in->Get("selected - angles/g_th_y_R_F_vs_th_x_R"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_F");
 
 		delete f_in;
 	}
