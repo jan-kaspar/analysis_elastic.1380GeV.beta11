@@ -55,7 +55,9 @@ for (int dsi : datasets.keys)
 			//string opt = "eb";
 	
 			TH1_x_min = -inf; TH1_x_max = +inf;
-			draw(shift(0, 1.15)*tr, RootGetObject(f, "selected - angles/h_th_x"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$ (scaled)");
+			//real corr = (dgns[dgni] == "45b_56t") ? 1.15 : 1.15;
+			real corr = 1.35;
+			draw(shift(0, corr)*tr, RootGetObject(f, "selected - angles/h_th_x_safe"), opt, StdPen(++ci), dgn_label + ", $\th_x^*$ (scaled)");
 
 			if (dgns[dgni] == "45b_56t")
 				TH1_x_min = +230e-6; 

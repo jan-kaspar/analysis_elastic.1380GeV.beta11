@@ -1,17 +1,20 @@
 #!/bin/bash
 
-#nonExponential="f"
-nonExponential="t"
+nonExponential="f"
+#nonExponential="t"
 
 #events="6E3"
 events="1E5"
 
-de_th_y_45b="0E-6"
-de_th_y_45t="0E-6"
+#de_th_y_45b="0E-6"
+#de_th_y_45t="0E-6"
+
+de_th_y_45b="-5E-6"
+de_th_y_45t="+10E-6"
 
 seeds_from="1"
 
-seeds_to="10"
+seeds_to="5"
 #seeds_to="20"
 
 #----------------------------------------------------------------------------------------------------

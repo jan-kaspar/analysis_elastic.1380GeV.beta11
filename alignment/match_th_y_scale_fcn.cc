@@ -196,6 +196,11 @@ void PrintUsage()
 {
 	printf("USAGE: match_th_y_scale_fcn <option> <option> ...\n");
 	printf("OPTIONS:\n");
+	printf("    --inputDir\n");
+	printf("    --outputDir\n");
+	printf("    --outputTag\n");
+	printf("    --si_th_ref\n");
+	printf("    --debug\n");
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -214,6 +219,12 @@ int main(int argc, const char **argv)
 	// parse command line
 	for (int i = 1; i < argc; i++)
 	{
+		if (strcmp(argv[i], "--help") == 0 || strcmp(argv[i], "-h") == 0)
+		{
+			PrintUsage();
+			return 0;
+		}
+
 		if (strcmp(argv[i], "--inputDir") == 0)
 		{
 			if (i + 1 >= argc)
@@ -273,6 +284,7 @@ int main(int argc, const char **argv)
 		}
 
 		printf("ERROR: unknown option '%s'\n", argv[i]);
+		PrintUsage();
 		return 1;
 	}
 
@@ -315,10 +327,10 @@ int main(int argc, const char **argv)
 		f_in = TFile::Open((inputDir + "/distributions_" + diagonal + ".root").c_str());
 		gDirectory = d_dataset->mkdir(diagonal.c_str());
 
-		DoMatch("L_F", (TGraph *)f_in->Get("selected - angles/g_th_y_L_F_vs_th_x_L"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_F");
-		DoMatch("L_N", (TGraph *)f_in->Get("selected - angles/g_th_y_L_N_vs_th_x_L"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_N");
-		DoMatch("R_N", (TGraph *)f_in->Get("selected - angles/g_th_y_R_N_vs_th_x_R"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_N");
-		DoMatch("R_F", (TGraph *)f_in->Get("selected - angles/g_th_y_R_F_vs_th_x_R"), +220E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_F");
+		DoMatch("L_F", (TGraph *)f_in->Get("selected - angles/g_th_y_L_F_vs_th_x_L"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_F");
+		DoMatch("L_N", (TGraph *)f_in->Get("selected - angles/g_th_y_L_N_vs_th_x_L"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/L_N");
+		DoMatch("R_N", (TGraph *)f_in->Get("selected - angles/g_th_y_R_N_vs_th_x_R"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_N");
+		DoMatch("R_F", (TGraph *)f_in->Get("selected - angles/g_th_y_R_F_vs_th_x_R"), +200E-6, +420E-6, si_th_ref, f_res_out, "45t_56b/R_F");
 
 		delete f_in;
 	}

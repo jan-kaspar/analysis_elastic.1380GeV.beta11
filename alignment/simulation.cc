@@ -9,6 +9,8 @@
 #include "TH1D.h"
 #include "TRandom3.h"
 
+#include "../common_algorithms.h"
+
 using namespace std;
 
 //----------------------------------------------------------------------------------------------------
@@ -69,6 +71,7 @@ TSpline* BuildICDF(double t_min, double t_max)
 	return s;
 }
 
+//----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
 void PrintUsage()
@@ -188,6 +191,7 @@ int main(int argc, const char **argv)
 		}
 
 		printf("ERROR: unknown option '%s'\n", argv[i]);
+		PrintUsage();
 		return 1;
 	}
 
@@ -235,6 +239,9 @@ int main(int argc, const char **argv)
 	TGraph *g_th_y_R_N_vs_th_x_R = new TGraph();
 	TGraph *g_th_y_R_F_vs_th_x_R = new TGraph();
 
+	TH1D *h_t_true = new TH1D("h_t_true", ";t", 200, t_min, t_max); h_t_true->SetLineColor(1);
+	TH1D *h_t_obs = new TH1D("h_t_obs", ";t", 200, t_min, t_max); h_t_obs->SetLineColor(2);
+	TH1D *h_t_reco = new TH1D("h_t_reco", ";t", 200, t_min, t_max); h_t_reco->SetLineColor(4);
 
 	// prepare simulation
 	gRandom->SetSeed(seed);
@@ -246,6 +253,22 @@ int main(int argc, const char **argv)
 	TSpline *icdf_t = NULL;
 	if (nonExponential)
 		icdf_t = BuildICDF(t_min, t_max);
+
+	// prepare constants for acceptance correction
+	Environment env;
+	env.InitNominal();
+	env.UseMatchedOptics();
+
+	Analysis anal;
+	anal.th_y_lcut_L = th_y_min_count - 5E-6 + de_th_y;
+	anal.th_y_lcut_R = th_y_min_count - 5E-6 + de_th_y;
+	anal.th_y_hcut_L = 1.;
+	anal.th_y_hcut_R = 1.;
+	anal.si_th_y_1arm = si_de_th_y;
+	anal.th_x_lcut = -1.;
+	anal.th_x_hcut = +1.;
+	anal.th_y_lcut = th_y_min_count + de_th_y;
+	anal.th_y_hcut = +1.;
 
 	// reset counters
 	unsigned int n_ev_safe_L_F = 0;
@@ -267,6 +290,8 @@ int main(int argc, const char **argv)
 		double th = sqrt(t) / p;
 		double th_x = th * cos(phi);
 		double th_y = th * sin(phi);
+
+		h_t_true->Fill(t);
 
 		if (th_y < th_y_min_cut)
 			continue;
@@ -319,6 +344,26 @@ int main(int argc, const char **argv)
 		g_th_y_R_N_vs_th_x_R->SetPoint(idx, th_x_R, th_y_R_N);
 		g_th_y_R_F_vs_th_x_R->SetPoint(idx, th_x_R, th_y_R_F);
 
+		// acceptance correction
+		double th_y_sign = (dgn == d45t56b) ? -1. : +1.;
+
+		Kinematics k;
+		k.th_x_L = th_x_L;
+		k.th_x_R = th_x_R;
+		k.th_x = (th_x_L + th_x_R) / 2.;
+		k.th_y_L = th_y_L;
+		k.th_y_R = th_y_R;
+		k.th_y = (th_y_L + th_y_R) / 2.;
+		k.ThetasToTPhi(env);
+
+		double phi_corr = 1., div_corr = 1.;
+		bool skip = CalculateAcceptanceCorrections(th_y_sign, k, anal, phi_corr, div_corr);
+		if (!skip)
+		{
+			h_t_obs->Fill(k.t);
+			h_t_reco->Fill(k.t, phi_corr * div_corr / 2.);
+		}
+
 		// shall stop ?
 		if (n_ev_acc >= N_ev)
 			break;
@@ -331,6 +376,12 @@ int main(int argc, const char **argv)
 	printf("n_ev_safe_L_N = %u\n", n_ev_safe_L_N);
 	printf("n_ev_safe_R_N = %u\n", n_ev_safe_R_N);
 	printf("n_ev_safe_R_F = %u\n", n_ev_safe_R_F);
+
+	// fit plots
+	TF1 *ff_exp = new TF1("ff_exp", "[0] * exp(-[1]*x)");
+
+	ff_exp->SetParameters(N_ev, 17.5);
+	h_t_reco->Fit(ff_exp, "", "", 0.1, 0.34);
 
 	// save plots
 	gDirectory = f_out->mkdir("selected - angles");
@@ -346,6 +397,10 @@ int main(int argc, const char **argv)
 	g_th_y_L_N_vs_th_x_L->Write("g_th_y_L_N_vs_th_x_L");
 	g_th_y_R_N_vs_th_x_R->Write("g_th_y_R_N_vs_th_x_R");
 	g_th_y_R_F_vs_th_x_R->Write("g_th_y_R_F_vs_th_x_R");
+
+	h_t_true->Write();
+	h_t_obs->Write();
+	h_t_reco->Write();
 
 	// clean up
 	delete f_out;
