@@ -386,18 +386,26 @@ void TestAlgorithm()
 //----------------------------------------------------------------------------------------------------
 //----------------------------------------------------------------------------------------------------
 
-int main(/*int argc, char **argv*/)
+int main(int argc, char **argv)
 {
 	/*
 	TestAlgorithm();
 	return 0;
 	*/
 
-	// get input
+	// select input
 	vector<string> input_files;
-	//input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9009_totem_ntuple.root");
-	input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9010_totem_ntuple.root");
 
+	for (int argi = 1; argi < argc; ++argi)
+	{
+		if (strcmp(argv[argi], "9009") == 0)
+			input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9009_totem_ntuple.root");
+
+		if (strcmp(argv[argi], "9010") == 0)
+			input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9010_totem_ntuple.root");
+	}
+
+	// get input
 	TChain *ch = new TChain("TotemNtuple");
 	printf(">> input_files\n");
 	for (unsigned int i = 0; i < input_files.size(); i++)
@@ -414,11 +422,11 @@ int main(/*int argc, char **argv*/)
 	EventMetaData *metaData = new EventMetaData();
 	ch->SetBranchStatus("event_info.*", 1);
 	ch->SetBranchAddress("event_info.", &metaData);
+	*/
 
 	TriggerData *triggerData = new TriggerData();
 	ch->SetBranchStatus("trigger_data.*", 1);
 	ch->SetBranchAddress("trigger_data.", &triggerData);
-	*/
 
 	DiagStruct diag_45b, diag_45t;
 	diag_45b.AssignBranches(ch, 25, 21, 120, 124);
@@ -433,10 +441,14 @@ int main(/*int argc, char **argv*/)
 		if ((ev % 100000) == 0)
 			printf("%u\n", ev);
 
-		//if (ev >= 100000)
+		//if (ev >= 1000)
 		//	break;
 
 		ch->GetEvent(ev);
+
+		// check bunch number
+		if (triggerData->bunch_num != 0)
+			continue;
 		
 		// run analysis
 		AnalyzeDiagonal(diag_45b, counters["45b_56t"]);
