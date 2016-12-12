@@ -153,6 +153,30 @@ bool FitsMultiplicityCondition(const RPStruct &rp, Projection proj, vector<strin
 
 //----------------------------------------------------------------------------------------------------
 
+bool IsReconstructable(const RPStruct &rp)
+{
+	unsigned int n_reas_V = 0;
+	for (unsigned int idx = 0; idx < 10; idx += 2)
+	{
+		if (rp.digi->numberOfClusters[idx] <= 5)
+			n_reas_V++;
+	}
+
+	unsigned int n_reas_U = 0;
+	for (unsigned int idx = 1; idx < 10; idx += 2)
+	{
+		if (rp.digi->numberOfClusters[idx] <= 5)
+			n_reas_U++;
+	}
+
+	if (n_reas_V >= 3 && n_reas_U >= 3)
+		return true;
+
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
 void AnalyzeDiagonal(const DiagStruct &dgn, CounterMap &c)
 {
 	c["anything"]++;
@@ -169,33 +193,131 @@ void AnalyzeDiagonal(const DiagStruct &dgn, CounterMap &c)
 	bool rp_R_2_F_U_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=5", ">5", ">5"});
 	bool rp_R_2_F_V_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=5", ">5", ">5"});
 
-	if (rp_L_2_F_U_cond0) c["rp_L_2_F_U_cond0"]++;
-	if (rp_L_2_F_V_cond0) c["rp_L_2_F_V_cond0"]++;
+	//--------------------
 
-	if (rp_L_2_N_U_cond0) c["rp_L_2_N_U_cond0"]++;
-	if (rp_L_2_N_V_cond0) c["rp_L_2_N_V_cond0"]++;
+	bool rp_L_2_F_U_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool rp_L_2_F_V_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
 
-	if (rp_R_2_N_U_cond0) c["rp_R_2_N_U_cond0"]++;
-	if (rp_R_2_N_V_cond0) c["rp_R_2_N_V_cond0"]++;
+	bool rp_L_2_N_U_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool rp_L_2_N_V_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
 
-	if (rp_R_2_F_U_cond0) c["rp_R_2_F_U_cond0"]++;
-	if (rp_R_2_F_V_cond0) c["rp_R_2_F_V_cond0"]++;
+	bool rp_R_2_N_U_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool rp_R_2_N_V_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
+
+	bool rp_R_2_F_U_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool rp_R_2_F_V_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
+
+	//--------------------
+
+	bool rp_L_2_F_U_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool rp_L_2_F_V_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool rp_L_2_N_U_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool rp_L_2_N_V_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool rp_R_2_N_U_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool rp_R_2_N_V_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool rp_R_2_F_U_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool rp_R_2_F_V_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	//--------------------
+	
+	bool rp_L_2_F_recon = IsReconstructable(dgn.L_2_F);
+	bool rp_L_2_N_recon = IsReconstructable(dgn.L_2_N);
+	bool rp_R_2_N_recon = IsReconstructable(dgn.R_2_N);
+	bool rp_R_2_F_recon = IsReconstructable(dgn.R_2_F);
+
+	//--------------------
+
+	if (rp_L_2_F_U_cond0) c["L_2_F_U_cond0"]++;
+	if (rp_L_2_F_V_cond0) c["L_2_F_V_cond0"]++;
+
+	if (rp_L_2_N_U_cond0) c["L_2_N_U_cond0"]++;
+	if (rp_L_2_N_V_cond0) c["L_2_N_V_cond0"]++;
+
+	if (rp_R_2_N_U_cond0) c["R_2_N_U_cond0"]++;
+	if (rp_R_2_N_V_cond0) c["R_2_N_V_cond0"]++;
+
+	if (rp_R_2_F_U_cond0) c["R_2_F_U_cond0"]++;
+	if (rp_R_2_F_V_cond0) c["R_2_F_V_cond0"]++;
 
 	bool rp_L_2_F_cond0 = rp_L_2_F_U_cond0 && rp_L_2_F_V_cond0;
 	bool rp_L_2_N_cond0 = rp_L_2_N_U_cond0 && rp_L_2_N_V_cond0;
 	bool rp_R_2_N_cond0 = rp_R_2_N_U_cond0 && rp_R_2_N_V_cond0;
 	bool rp_R_2_F_cond0 = rp_R_2_F_U_cond0 && rp_R_2_F_V_cond0;
 
-	if (rp_L_2_F_cond0) c["rp_L_2_F_cond0"]++;
+	if (rp_L_2_F_cond0) c["L_2_F_cond0"]++;
 
-	if (rp_L_2_N_cond0) c["rp_L_2_N_cond0"]++;
+	if (rp_L_2_N_cond0) c["L_2_N_cond0"]++;
 
-	if (rp_R_2_N_cond0) c["rp_R_2_N_cond0"]++;
+	if (rp_R_2_N_cond0) c["R_2_N_cond0"]++;
 
-	if (rp_R_2_F_cond0) c["rp_R_2_F_cond0"]++;
+	if (rp_R_2_F_cond0) c["R_2_F_cond0"]++;
 
 	if (rp_L_2_F_cond0 && rp_L_2_N_cond0 && rp_R_2_N_cond0 && rp_R_2_F_cond0)
 		c["cond0, U&V, 4RP"]++;
+
+	//--------------------
+	
+	bool rp_L_2_F_cond1m = (rp_L_2_F_U_cond1m && rp_L_2_F_V_cond0) || (rp_L_2_F_U_cond0 && rp_L_2_F_V_cond1m);
+	bool rp_L_2_F_cond1p = (rp_L_2_F_U_cond1p && rp_L_2_F_V_cond0) || (rp_L_2_F_U_cond0 && rp_L_2_F_V_cond1p);
+	
+	bool rp_L_2_N_cond1m = (rp_L_2_N_U_cond1m && rp_L_2_N_V_cond0) || (rp_L_2_N_U_cond0 && rp_L_2_N_V_cond1m);
+	bool rp_L_2_N_cond1p = (rp_L_2_N_U_cond1p && rp_L_2_N_V_cond0) || (rp_L_2_N_U_cond0 && rp_L_2_N_V_cond1p);
+	
+	bool rp_R_2_N_cond1m = (rp_R_2_N_U_cond1m && rp_R_2_N_V_cond0) || (rp_R_2_N_U_cond0 && rp_R_2_N_V_cond1m);
+	bool rp_R_2_N_cond1p = (rp_R_2_N_U_cond1p && rp_R_2_N_V_cond0) || (rp_R_2_N_U_cond0 && rp_R_2_N_V_cond1p);
+	
+	bool rp_R_2_F_cond1m = (rp_R_2_F_U_cond1m && rp_R_2_F_V_cond0) || (rp_R_2_F_U_cond0 && rp_R_2_F_V_cond1m);
+	bool rp_R_2_F_cond1p = (rp_R_2_F_U_cond1p && rp_R_2_F_V_cond0) || (rp_R_2_F_U_cond0 && rp_R_2_F_V_cond1p);
+
+	if (rp_L_2_F_cond1m) c["L_2_F_cond+1"]++;
+	if (rp_L_2_F_cond1p) c["L_2_F_cond-1"]++;
+
+	if (rp_L_2_N_cond1m) c["L_2_N_cond+1"]++;
+	if (rp_L_2_N_cond1p) c["L_2_N_cond-1"]++;
+
+	if (rp_R_2_N_cond1m) c["R_2_N_cond+1"]++;
+	if (rp_R_2_N_cond1p) c["R_2_N_cond-1"]++;
+
+	if (rp_R_2_F_cond1m) c["R_2_F_cond+1"]++;
+	if (rp_R_2_F_cond1p) c["R_2_F_cond-1"]++;
+	
+	//--------------------
+
+	if (rp_L_2_F_recon) c["L_2_F_recon"]++;
+	if (rp_L_2_N_recon) c["L_2_N_recon"]++;
+	if (rp_R_2_N_recon) c["R_2_N_recon"]++;
+	if (rp_R_2_F_recon) c["R_2_F_recon"]++;
+	
+	bool rp_L_2_F_cond0_AOR = rp_L_2_F_cond0 && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_L_2_N_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_cond0 && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_R_2_N_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond0 && rp_R_2_F_recon;
+	bool rp_R_2_F_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond0;
+
+	bool rp_L_2_F_cond1m_AOR = rp_L_2_F_cond1m && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_L_2_N_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_cond1m && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_R_2_N_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond1m && rp_R_2_F_recon;
+	bool rp_R_2_F_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond1m;
+
+	bool rp_L_2_F_cond1p_AOR = rp_L_2_F_cond1p && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_L_2_N_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_cond1p && rp_R_2_N_recon && rp_R_2_F_recon;
+	bool rp_R_2_N_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond1p && rp_R_2_F_recon;
+	bool rp_R_2_F_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond1p;
+
+	bool rp_any_cond0_AOR = rp_L_2_F_cond0_AOR || rp_L_2_N_cond0_AOR || rp_R_2_N_cond0_AOR || rp_R_2_F_cond0_AOR;
+	bool rp_any_cond1m_AOR = rp_L_2_F_cond1m_AOR || rp_L_2_N_cond1m_AOR || rp_R_2_N_cond1m_AOR || rp_R_2_F_cond1m_AOR;
+	bool rp_any_cond1p_AOR = rp_L_2_F_cond1p_AOR || rp_L_2_N_cond1p_AOR || rp_R_2_N_cond1p_AOR || rp_R_2_F_cond1p_AOR;
+
+	if (rp_L_2_F_cond0_AOR) c["L_2_F_cond0_AOR"]++;
+	if (rp_L_2_N_cond0_AOR) c["L_2_N_cond0_AOR"]++;
+	if (rp_R_2_N_cond0_AOR) c["R_2_N_cond0_AOR"]++;
+	if (rp_R_2_F_cond0_AOR) c["R_2_F_cond0_AOR"]++;
+
+	if (rp_any_cond0_AOR) c["any_cond0_AOR"]++;
+	if (rp_any_cond1m_AOR) c["any_cond-1_AOR"]++;
+	if (rp_any_cond1p_AOR) c["any_cond+1_AOR"]++;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -273,7 +395,7 @@ int main(/*int argc, char **argv*/)
 
 	// get input
 	vector<string> input_files;
-	input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9009_totem_ntuple.root");
+	//input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9009_totem_ntuple.root");
 	input_files.push_back("root://eostotem.cern.ch//eos/totem/data/offline/2013/11m/Ntuple/v_4.0/val9010_totem_ntuple.root");
 
 	TChain *ch = new TChain("TotemNtuple");
