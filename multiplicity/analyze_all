@@ -1,0 +1,6 @@
+#!/bin/bash
+
+make "analyze" || exit 1
+
+./analyze "9009" &> "analyze.9009.log" &
+./analyze "9010" &> "analyze.9010.log" &
