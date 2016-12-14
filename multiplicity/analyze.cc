@@ -19,8 +19,8 @@ struct RPStruct
 	/*
 	RPRootDumpPatternInfo *pat;
 	RPRootDumpTrackInfo *tr;
-	vector<RPRootDumpTrackInfo> *mtr;
 	*/
+	vector<RPRootDumpTrackInfo> *mtr;
 
 	RPStruct() : digi(NULL) /*, pat(NULL), tr(NULL) */ {}
 
@@ -42,9 +42,9 @@ struct RPStruct
 		sprintf(buf, "track_rp_%u.", id); ch->SetBranchAddress(buf, &tr);
 		*/
 
-		//mtr = new vector<RPRootDumpTrackInfo>();
-		//sprintf(buf, "multi_track_rp_%u.*", id); ch->SetBranchStatus(buf, 1);
-		//sprintf(buf, "multi_track_rp_%u", id); ch->SetBranchAddress(buf, &mtr);
+		mtr = new vector<RPRootDumpTrackInfo>();
+		sprintf(buf, "multi_track_rp_%u.*", id); ch->SetBranchStatus(buf, 1);
+		sprintf(buf, "multi_track_rp_%u", id); ch->SetBranchAddress(buf, &mtr);
 	}
 };
 
@@ -177,147 +177,214 @@ bool IsReconstructable(const RPStruct &rp)
 
 //----------------------------------------------------------------------------------------------------
 
-void AnalyzeDiagonal(const DiagStruct &dgn, CounterMap &c)
+bool HasMultitrack(const RPStruct &rp)
+{
+	for (const auto &t : *rp.mtr)
+	{
+		if (t.valid)
+			return true;
+	}
+
+	return false;
+}
+
+//----------------------------------------------------------------------------------------------------
+
+void AnalyzeDiagonal(const DiagStruct &dgn, unsigned int /*evIdx*/, CounterMap &c)
 {
 	c["anything"]++;
 
-	bool rp_L_2_F_U_cond0 = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=5", "=5", "=5", ">5", ">5"});
-	bool rp_L_2_F_V_cond0 = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=5", "=5", "=5", ">5", ">5"});
+	//--------------------
 
-	bool rp_L_2_N_U_cond0 = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=5", "=5", "=5", ">5", ">5"});
-	bool rp_L_2_N_V_cond0 = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=5", "=5", "=5", ">5", ">5"});
+	bool L_2_F_mtr = HasMultitrack(dgn.L_2_F);
+	bool L_2_N_mtr = HasMultitrack(dgn.L_2_N);
+	bool R_2_N_mtr = HasMultitrack(dgn.R_2_N);
+	bool R_2_F_mtr = HasMultitrack(dgn.R_2_F);
 
-	bool rp_R_2_N_U_cond0 = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=5", "=5", "=5", ">5", ">5"});
-	bool rp_R_2_N_V_cond0 = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=5", "=5", "=5", ">5", ">5"});
+	if (L_2_F_mtr) c["L_2_F_mtr"]++;
+	if (L_2_N_mtr) c["L_2_N_mtr"]++;
+	if (R_2_N_mtr) c["R_2_N_mtr"]++;
+	if (R_2_F_mtr) c["R_2_F_mtr"]++;
 
-	bool rp_R_2_F_U_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=5", ">5", ">5"});
-	bool rp_R_2_F_V_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=5", ">5", ">5"});
+	bool all_rp_mtr = L_2_F_mtr && L_2_N_mtr && R_2_N_mtr && R_2_F_mtr;
+
+	if (all_rp_mtr) c["all_rp_mtr"]++;
+
+	// TODO
+	/*
+	if (!all_rp_mtr)
+		return;
+	*/
 
 	//--------------------
 
-	bool rp_L_2_F_U_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
-	bool rp_L_2_F_V_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
+	bool L_2_F_U_cond0 = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=5", "=5", "=5", ">5", ">5"});
+	bool L_2_F_V_cond0 = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=5", "=5", "=5", ">5", ">5"});
 
-	bool rp_L_2_N_U_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
-	bool rp_L_2_N_V_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
+	bool L_2_N_U_cond0 = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=5", "=5", "=5", ">5", ">5"});
+	bool L_2_N_V_cond0 = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=5", "=5", "=5", ">5", ">5"});
 
-	bool rp_R_2_N_U_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
-	bool rp_R_2_N_V_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
+	bool R_2_N_U_cond0 = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=5", "=5", "=5", ">5", ">5"});
+	bool R_2_N_V_cond0 = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=5", "=5", "=5", ">5", ">5"});
 
-	bool rp_R_2_F_U_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
-	bool rp_R_2_F_V_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
+	bool R_2_F_U_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=5", ">5", ">5"});
+	bool R_2_F_V_cond0 = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=5", ">5", ">5"});
 
 	//--------------------
 
-	bool rp_L_2_F_U_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
-	bool rp_L_2_F_V_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
+	bool L_2_F_U_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool L_2_F_V_cond1m = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
 
-	bool rp_L_2_N_U_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
-	bool rp_L_2_N_V_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+	bool L_2_N_U_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool L_2_N_V_cond1m = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
 
-	bool rp_R_2_N_U_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
-	bool rp_R_2_N_V_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+	bool R_2_N_U_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool R_2_N_V_cond1m = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=4", "=5", "=5", ">5", ">5"});
 
-	bool rp_R_2_F_U_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
-	bool rp_R_2_F_V_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
+	bool R_2_F_U_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=4", "=5", "=5", ">5", ">5"});
+	bool R_2_F_V_cond1m = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=4", "=5", "=5", ">5", ">5"});
+
+	//--------------------
+
+	bool L_2_F_U_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool L_2_F_V_cond1p = FitsMultiplicityCondition(dgn.L_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool L_2_N_U_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool L_2_N_V_cond1p = FitsMultiplicityCondition(dgn.L_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool R_2_N_U_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool R_2_N_V_cond1p = FitsMultiplicityCondition(dgn.R_2_N, pV, {"=5", "=5", "=6", ">5", ">5"});
+
+	bool R_2_F_U_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pU, {"=5", "=5", "=6", ">5", ">5"});
+	bool R_2_F_V_cond1p = FitsMultiplicityCondition(dgn.R_2_F, pV, {"=5", "=5", "=6", ">5", ">5"});
 
 	//--------------------
 	
-	bool rp_L_2_F_recon = IsReconstructable(dgn.L_2_F);
-	bool rp_L_2_N_recon = IsReconstructable(dgn.L_2_N);
-	bool rp_R_2_N_recon = IsReconstructable(dgn.R_2_N);
-	bool rp_R_2_F_recon = IsReconstructable(dgn.R_2_F);
+	bool L_2_F_recon = IsReconstructable(dgn.L_2_F);
+	bool L_2_N_recon = IsReconstructable(dgn.L_2_N);
+	bool R_2_N_recon = IsReconstructable(dgn.R_2_N);
+	bool R_2_F_recon = IsReconstructable(dgn.R_2_F);
 
 	//--------------------
 
-	if (rp_L_2_F_U_cond0) c["L_2_F_U_cond0"]++;
-	if (rp_L_2_F_V_cond0) c["L_2_F_V_cond0"]++;
+	if (L_2_F_U_cond0) c["L_2_F_U_cond0"]++;
+	if (L_2_F_V_cond0) c["L_2_F_V_cond0"]++;
 
-	if (rp_L_2_N_U_cond0) c["L_2_N_U_cond0"]++;
-	if (rp_L_2_N_V_cond0) c["L_2_N_V_cond0"]++;
+	if (L_2_N_U_cond0) c["L_2_N_U_cond0"]++;
+	if (L_2_N_V_cond0) c["L_2_N_V_cond0"]++;
 
-	if (rp_R_2_N_U_cond0) c["R_2_N_U_cond0"]++;
-	if (rp_R_2_N_V_cond0) c["R_2_N_V_cond0"]++;
+	if (R_2_N_U_cond0) c["R_2_N_U_cond0"]++;
+	if (R_2_N_V_cond0) c["R_2_N_V_cond0"]++;
 
-	if (rp_R_2_F_U_cond0) c["R_2_F_U_cond0"]++;
-	if (rp_R_2_F_V_cond0) c["R_2_F_V_cond0"]++;
+	if (R_2_F_U_cond0) c["R_2_F_U_cond0"]++;
+	if (R_2_F_V_cond0) c["R_2_F_V_cond0"]++;
 
-	bool rp_L_2_F_cond0 = rp_L_2_F_U_cond0 && rp_L_2_F_V_cond0;
-	bool rp_L_2_N_cond0 = rp_L_2_N_U_cond0 && rp_L_2_N_V_cond0;
-	bool rp_R_2_N_cond0 = rp_R_2_N_U_cond0 && rp_R_2_N_V_cond0;
-	bool rp_R_2_F_cond0 = rp_R_2_F_U_cond0 && rp_R_2_F_V_cond0;
+	bool L_2_F_cond0 = L_2_F_U_cond0 && L_2_F_V_cond0;
+	bool L_2_N_cond0 = L_2_N_U_cond0 && L_2_N_V_cond0;
+	bool R_2_N_cond0 = R_2_N_U_cond0 && R_2_N_V_cond0;
+	bool R_2_F_cond0 = R_2_F_U_cond0 && R_2_F_V_cond0;
 
-	if (rp_L_2_F_cond0) c["L_2_F_cond0"]++;
+	if (L_2_F_cond0) c["L_2_F_cond0"]++;
 
-	if (rp_L_2_N_cond0) c["L_2_N_cond0"]++;
+	if (L_2_N_cond0) c["L_2_N_cond0"]++;
 
-	if (rp_R_2_N_cond0) c["R_2_N_cond0"]++;
+	if (R_2_N_cond0) c["R_2_N_cond0"]++;
 
-	if (rp_R_2_F_cond0) c["R_2_F_cond0"]++;
+	if (R_2_F_cond0) c["R_2_F_cond0"]++;
 
-	if (rp_L_2_F_cond0 && rp_L_2_N_cond0 && rp_R_2_N_cond0 && rp_R_2_F_cond0)
+	if (L_2_F_cond0 && L_2_N_cond0 && R_2_N_cond0 && R_2_F_cond0)
 		c["cond0, U&V, 4RP"]++;
 
 	//--------------------
 	
-	bool rp_L_2_F_cond1m = (rp_L_2_F_U_cond1m && rp_L_2_F_V_cond0) || (rp_L_2_F_U_cond0 && rp_L_2_F_V_cond1m);
-	bool rp_L_2_F_cond1p = (rp_L_2_F_U_cond1p && rp_L_2_F_V_cond0) || (rp_L_2_F_U_cond0 && rp_L_2_F_V_cond1p);
+	bool L_2_F_cond1m = (L_2_F_U_cond1m && L_2_F_V_cond0) || (L_2_F_U_cond0 && L_2_F_V_cond1m);
+	bool L_2_F_cond1p = (L_2_F_U_cond1p && L_2_F_V_cond0) || (L_2_F_U_cond0 && L_2_F_V_cond1p);
 	
-	bool rp_L_2_N_cond1m = (rp_L_2_N_U_cond1m && rp_L_2_N_V_cond0) || (rp_L_2_N_U_cond0 && rp_L_2_N_V_cond1m);
-	bool rp_L_2_N_cond1p = (rp_L_2_N_U_cond1p && rp_L_2_N_V_cond0) || (rp_L_2_N_U_cond0 && rp_L_2_N_V_cond1p);
+	bool L_2_N_cond1m = (L_2_N_U_cond1m && L_2_N_V_cond0) || (L_2_N_U_cond0 && L_2_N_V_cond1m);
+	bool L_2_N_cond1p = (L_2_N_U_cond1p && L_2_N_V_cond0) || (L_2_N_U_cond0 && L_2_N_V_cond1p);
 	
-	bool rp_R_2_N_cond1m = (rp_R_2_N_U_cond1m && rp_R_2_N_V_cond0) || (rp_R_2_N_U_cond0 && rp_R_2_N_V_cond1m);
-	bool rp_R_2_N_cond1p = (rp_R_2_N_U_cond1p && rp_R_2_N_V_cond0) || (rp_R_2_N_U_cond0 && rp_R_2_N_V_cond1p);
+	bool R_2_N_cond1m = (R_2_N_U_cond1m && R_2_N_V_cond0) || (R_2_N_U_cond0 && R_2_N_V_cond1m);
+	bool R_2_N_cond1p = (R_2_N_U_cond1p && R_2_N_V_cond0) || (R_2_N_U_cond0 && R_2_N_V_cond1p);
 	
-	bool rp_R_2_F_cond1m = (rp_R_2_F_U_cond1m && rp_R_2_F_V_cond0) || (rp_R_2_F_U_cond0 && rp_R_2_F_V_cond1m);
-	bool rp_R_2_F_cond1p = (rp_R_2_F_U_cond1p && rp_R_2_F_V_cond0) || (rp_R_2_F_U_cond0 && rp_R_2_F_V_cond1p);
+	bool R_2_F_cond1m = (R_2_F_U_cond1m && R_2_F_V_cond0) || (R_2_F_U_cond0 && R_2_F_V_cond1m);
+	bool R_2_F_cond1p = (R_2_F_U_cond1p && R_2_F_V_cond0) || (R_2_F_U_cond0 && R_2_F_V_cond1p);
 
-	if (rp_L_2_F_cond1m) c["L_2_F_cond+1"]++;
-	if (rp_L_2_F_cond1p) c["L_2_F_cond-1"]++;
+	if (L_2_F_cond1m) c["L_2_F_cond-1"]++;
+	if (L_2_F_cond1p) c["L_2_F_cond+1"]++;
 
-	if (rp_L_2_N_cond1m) c["L_2_N_cond+1"]++;
-	if (rp_L_2_N_cond1p) c["L_2_N_cond-1"]++;
+	if (L_2_N_cond1m) c["L_2_N_cond-1"]++;
+	if (L_2_N_cond1p) c["L_2_N_cond+1"]++;
 
-	if (rp_R_2_N_cond1m) c["R_2_N_cond+1"]++;
-	if (rp_R_2_N_cond1p) c["R_2_N_cond-1"]++;
+	if (R_2_N_cond1m) c["R_2_N_cond-1"]++;
+	if (R_2_N_cond1p) c["R_2_N_cond+1"]++;
 
-	if (rp_R_2_F_cond1m) c["R_2_F_cond+1"]++;
-	if (rp_R_2_F_cond1p) c["R_2_F_cond-1"]++;
+	if (R_2_F_cond1m) c["R_2_F_cond-1"]++;
+	if (R_2_F_cond1p) c["R_2_F_cond+1"]++;
 	
 	//--------------------
 
-	if (rp_L_2_F_recon) c["L_2_F_recon"]++;
-	if (rp_L_2_N_recon) c["L_2_N_recon"]++;
-	if (rp_R_2_N_recon) c["R_2_N_recon"]++;
-	if (rp_R_2_F_recon) c["R_2_F_recon"]++;
+	if (L_2_F_recon) c["L_2_F_recon"]++;
+	if (L_2_N_recon) c["L_2_N_recon"]++;
+	if (R_2_N_recon) c["R_2_N_recon"]++;
+	if (R_2_F_recon) c["R_2_F_recon"]++;
 	
-	bool rp_L_2_F_cond0_AOR = rp_L_2_F_cond0 && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_L_2_N_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_cond0 && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_R_2_N_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond0 && rp_R_2_F_recon;
-	bool rp_R_2_F_cond0_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond0;
+	bool L_2_F_cond0_AOR = L_2_F_cond0 && L_2_N_recon && R_2_N_recon && R_2_F_recon;
+	bool L_2_N_cond0_AOR = L_2_F_recon && L_2_N_cond0 && R_2_N_recon && R_2_F_recon;
+	bool R_2_N_cond0_AOR = L_2_F_recon && L_2_N_recon && R_2_N_cond0 && R_2_F_recon;
+	bool R_2_F_cond0_AOR = L_2_F_recon && L_2_N_recon && R_2_N_recon && R_2_F_cond0;
 
-	bool rp_L_2_F_cond1m_AOR = rp_L_2_F_cond1m && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_L_2_N_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_cond1m && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_R_2_N_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond1m && rp_R_2_F_recon;
-	bool rp_R_2_F_cond1m_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond1m;
+	bool L_2_F_cond1m_AOR = L_2_F_cond1m && L_2_N_recon && R_2_N_recon && R_2_F_recon;
+	bool L_2_N_cond1m_AOR = L_2_F_recon && L_2_N_cond1m && R_2_N_recon && R_2_F_recon;
+	bool R_2_N_cond1m_AOR = L_2_F_recon && L_2_N_recon && R_2_N_cond1m && R_2_F_recon;
+	bool R_2_F_cond1m_AOR = L_2_F_recon && L_2_N_recon && R_2_N_recon && R_2_F_cond1m;
 
-	bool rp_L_2_F_cond1p_AOR = rp_L_2_F_cond1p && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_L_2_N_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_cond1p && rp_R_2_N_recon && rp_R_2_F_recon;
-	bool rp_R_2_N_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_cond1p && rp_R_2_F_recon;
-	bool rp_R_2_F_cond1p_AOR = rp_L_2_F_recon && rp_L_2_N_recon && rp_R_2_N_recon && rp_R_2_F_cond1p;
+	bool L_2_F_cond1p_AOR = L_2_F_cond1p && L_2_N_recon && R_2_N_recon && R_2_F_recon;
+	bool L_2_N_cond1p_AOR = L_2_F_recon && L_2_N_cond1p && R_2_N_recon && R_2_F_recon;
+	bool R_2_N_cond1p_AOR = L_2_F_recon && L_2_N_recon && R_2_N_cond1p && R_2_F_recon;
+	bool R_2_F_cond1p_AOR = L_2_F_recon && L_2_N_recon && R_2_N_recon && R_2_F_cond1p;
 
-	bool rp_any_cond0_AOR = rp_L_2_F_cond0_AOR || rp_L_2_N_cond0_AOR || rp_R_2_N_cond0_AOR || rp_R_2_F_cond0_AOR;
-	bool rp_any_cond1m_AOR = rp_L_2_F_cond1m_AOR || rp_L_2_N_cond1m_AOR || rp_R_2_N_cond1m_AOR || rp_R_2_F_cond1m_AOR;
-	bool rp_any_cond1p_AOR = rp_L_2_F_cond1p_AOR || rp_L_2_N_cond1p_AOR || rp_R_2_N_cond1p_AOR || rp_R_2_F_cond1p_AOR;
+	bool rp_any_cond0_AOR = L_2_F_cond0_AOR || L_2_N_cond0_AOR || R_2_N_cond0_AOR || R_2_F_cond0_AOR;
+	bool rp_any_cond1m_AOR = L_2_F_cond1m_AOR || L_2_N_cond1m_AOR || R_2_N_cond1m_AOR || R_2_F_cond1m_AOR;
+	bool rp_any_cond1p_AOR = L_2_F_cond1p_AOR || L_2_N_cond1p_AOR || R_2_N_cond1p_AOR || R_2_F_cond1p_AOR;
 
-	if (rp_L_2_F_cond0_AOR) c["L_2_F_cond0_AOR"]++;
-	if (rp_L_2_N_cond0_AOR) c["L_2_N_cond0_AOR"]++;
-	if (rp_R_2_N_cond0_AOR) c["R_2_N_cond0_AOR"]++;
-	if (rp_R_2_F_cond0_AOR) c["R_2_F_cond0_AOR"]++;
+	if (L_2_F_cond0_AOR) c["L_2_F_cond0_AOR"]++;
+	if (L_2_N_cond0_AOR) c["L_2_N_cond0_AOR"]++;
+	if (R_2_N_cond0_AOR) c["R_2_N_cond0_AOR"]++;
+	if (R_2_F_cond0_AOR) c["R_2_F_cond0_AOR"]++;
 
-	if (rp_any_cond0_AOR) c["any_cond0_AOR"]++;
-	if (rp_any_cond1m_AOR) c["any_cond-1_AOR"]++;
-	if (rp_any_cond1p_AOR) c["any_cond+1_AOR"]++;
+	if (rp_any_cond0_AOR) c["any_rp_cond0_AOR"]++;
+	if (rp_any_cond1m_AOR) c["any_rp_cond-1_AOR"]++;
+	if (rp_any_cond1p_AOR) c["any_rp_cond+1_AOR"]++;
+
+	//--------------------
+
+	bool L_2_F_cond0_AOMtr = L_2_F_cond0 && L_2_N_mtr && R_2_N_mtr && R_2_F_mtr;
+	bool L_2_N_cond0_AOMtr = L_2_F_mtr && L_2_N_cond0 && R_2_N_mtr && R_2_F_mtr;
+	bool R_2_N_cond0_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_cond0 && R_2_F_mtr;
+	bool R_2_F_cond0_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_mtr && R_2_F_cond0;
+
+	bool L_2_F_cond1m_AOMtr = L_2_F_cond1m && L_2_N_mtr && R_2_N_mtr && R_2_F_mtr;
+	bool L_2_N_cond1m_AOMtr = L_2_F_mtr && L_2_N_cond1m && R_2_N_mtr && R_2_F_mtr;
+	bool R_2_N_cond1m_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_cond1m && R_2_F_mtr;
+	bool R_2_F_cond1m_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_mtr && R_2_F_cond1m;
+
+	bool L_2_F_cond1p_AOMtr = L_2_F_cond1p && L_2_N_mtr && R_2_N_mtr && R_2_F_mtr;
+	bool L_2_N_cond1p_AOMtr = L_2_F_mtr && L_2_N_cond1p && R_2_N_mtr && R_2_F_mtr;
+	bool R_2_N_cond1p_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_cond1p && R_2_F_mtr;
+	bool R_2_F_cond1p_AOMtr = L_2_F_mtr && L_2_N_mtr && R_2_N_mtr && R_2_F_cond1p;
+
+	bool rp_any_cond0_AOMtr = L_2_F_cond0_AOMtr || L_2_N_cond0_AOMtr || R_2_N_cond0_AOMtr || R_2_F_cond0_AOMtr;
+	bool rp_any_cond1m_AOMtr = L_2_F_cond1m_AOMtr || L_2_N_cond1m_AOMtr || R_2_N_cond1m_AOMtr || R_2_F_cond1m_AOMtr;
+	bool rp_any_cond1p_AOMtr = L_2_F_cond1p_AOMtr || L_2_N_cond1p_AOMtr || R_2_N_cond1p_AOMtr || R_2_F_cond1p_AOMtr;
+
+	if (L_2_F_cond0_AOMtr) c["L_2_F_cond0_AOMtr"]++;
+	if (L_2_N_cond0_AOMtr) c["L_2_N_cond0_AOMtr"]++;
+	if (R_2_N_cond0_AOMtr) c["R_2_N_cond0_AOMtr"]++;
+	if (R_2_F_cond0_AOMtr) c["R_2_F_cond0_AOMtr"]++;
+
+	if (rp_any_cond0_AOMtr) c["any_rp_cond0_AOMtr"]++;
+	if (rp_any_cond1m_AOMtr) c["any_rp_cond-1_AOMtr"]++;
+	if (rp_any_cond1p_AOMtr) c["any_rp_cond+1_AOMtr"]++;
 }
 
 //----------------------------------------------------------------------------------------------------
@@ -441,7 +508,7 @@ int main(int argc, char **argv)
 		if ((ev % 100000) == 0)
 			printf("%u\n", ev);
 
-		//if (ev >= 1000)
+		//if (ev >= 100000)
 		//	break;
 
 		ch->GetEvent(ev);
@@ -451,8 +518,8 @@ int main(int argc, char **argv)
 			continue;
 		
 		// run analysis
-		AnalyzeDiagonal(diag_45b, counters["45b_56t"]);
-		AnalyzeDiagonal(diag_45t, counters["45t_56b"]);
+		AnalyzeDiagonal(diag_45b, ev, counters["45b_56t"]);
+		AnalyzeDiagonal(diag_45t, ev, counters["45t_56b"]);
 	}
 
 	// print results
